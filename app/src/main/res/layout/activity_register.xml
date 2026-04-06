@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:text="@string/dang_ky"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edtTen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"
+        android:hint="@string/hovaten"
+        android:inputType="textEmailAddress"
+        android:autofillHints="emailAddress"/>
+
+    <EditText
+        android:id="@+id/edtEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:autofillHints="emailAddress"/>
+
+    <EditText
+        android:id="@+id/edtPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"
+        android:hint="@string/mat_khau"
+        android:inputType="textPassword"
+        android:autofillHints="password"/>
+
+    <EditText
+        android:id="@+id/edtConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:padding="12dp"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/nhap_lai_mat_khau"
+        android:inputType="textPassword"
+        android:autofillHints="password"/>
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/dang_ky"/>
+
+</LinearLayout>

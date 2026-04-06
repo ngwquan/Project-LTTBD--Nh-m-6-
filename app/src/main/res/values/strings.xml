@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Expense Management</string>
+    <string name="hovaten">Họ và tên</string>
+    <string name="dang_ky">Đăng ký</string>
+    <string name="email">Email</string>
+    <string name="mat_khau">Mật khẩu</string>
+    <string name="nhap_lai_mat_khau">Nhập lại mật khẩu</string>
 </resources>
