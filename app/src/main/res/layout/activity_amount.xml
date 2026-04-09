@@ -8,26 +8,24 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hãy chọn đơn vị tiền tệ mà bạn đang sử dụng"
+        android:text="Nhập số tiền bạn đang có"
         android:textSize="22sp"
         android:gravity="center_horizontal"
         android:padding="16dp" />
 
-    <Spinner
-        android:id="@+id/spinnerCurrency"
+    <EditText
+        android:id="@+id/edtMoney"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp" />
+        android:hint="Ví dụ: 1.000.000"
+        android:inputType="number"
+        android:layout_marginTop="20dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center" />
     <Button
-        android:id="@+id/btnContinue"
+        android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tiếp tục" />
+        android:text="Xác nhận"
+        android:layout_marginTop="20dp" />
+
 </LinearLayout>

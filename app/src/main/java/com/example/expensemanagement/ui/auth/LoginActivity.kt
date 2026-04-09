@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
-import com.example.expensemanagement.ui.HomeActivity
+import com.example.expensemanagement.ui.home.HomeActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -28,12 +28,12 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Lấy thông tin đã đăng ký
+            // lấy thông tin đăng ký
             val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val savedEmail = sharedPref.getString("email", null)
             val savedPassword = sharedPref.getString("password", null)
 
-            // Tài khoản để vào thẳng mà không cần đăng ký
+            // tài khoản admin không cần đăng ký
             val isDefaultAdmin = (email == "admin" && password == "123456")
             val isRegisteredUser = (email == savedEmail && password == savedPassword)
 
