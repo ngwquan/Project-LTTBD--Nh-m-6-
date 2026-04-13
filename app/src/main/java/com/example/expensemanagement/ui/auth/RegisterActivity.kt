@@ -16,6 +16,11 @@ class RegisterActivity : AppCompatActivity() {
         val edtPassword = findViewById<EditText>(R.id.edtPassword)
         val edtConfirm = findViewById<EditText>(R.id.edtConfirm)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
+        val txtLogin = findViewById<TextView>(R.id.txtLogin)
+
+        txtLogin.setOnClickListener {
+            finish()
+        }
 
         btnRegister.setOnClickListener {
             val email = edtEmail.text.toString().trim()
@@ -32,7 +37,7 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Lưu thông tin đăng ký vào localStorage
+            // lưu thông tin đăng ký vào SharedPreferences
             val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             with(sharedPref.edit()) {
                 putString("email", email)
