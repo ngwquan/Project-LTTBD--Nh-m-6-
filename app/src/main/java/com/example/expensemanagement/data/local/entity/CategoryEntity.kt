@@ -1,4 +1,5 @@
 package com.example.expensemanagement.data.local.entity
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
@@ -15,8 +16,11 @@ import androidx.room.ForeignKey
     ]
 )
 data class CategoryEntity(
-    @PrimaryKey val id: String,
-    val user_id: String,
+    @PrimaryKey
+    @ColumnInfo(name = "category_id")
+    val id: String,
+    @ColumnInfo(name = "user_id")
+    val userId: String,
     val name: String,
     val type: String,
     val isSystem: Boolean

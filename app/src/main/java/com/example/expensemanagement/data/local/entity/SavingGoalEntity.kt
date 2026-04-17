@@ -22,7 +22,7 @@ import java.sql.Date
     ]
 )
 
-data class SavingGoalsEntity (
+data class SavingGoalEntity (
     @PrimaryKey
     @ColumnInfo(name = "saving_goal_id")
     val id: String,
