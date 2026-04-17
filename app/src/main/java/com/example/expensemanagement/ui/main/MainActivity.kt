@@ -1,4 +1,4 @@
-package com.example.expensemanagement
+package com.example.expensemanagement.ui.main
 
 import android.content.Context
 import android.content.Intent

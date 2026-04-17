@@ -7,7 +7,7 @@ import android.text.InputType
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
-import com.example.expensemanagement.ui.home.HomeActivity
+import com.example.expensemanagement.ui.setup.SetupActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -65,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, HomeActivity::class.java))
+                startActivity(Intent(this, SetupActivity::class.java))
                 finish()
             } else {
                 Toast.makeText(this, "Email hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show()
