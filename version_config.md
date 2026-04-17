@@ -38,3 +38,13 @@
 
 \*\*\*File build.gradle.kts module (bên trong app) không cần sửa
 
+
+
+
+
+Sau khi đã sửa xong thì nhấn 'Sync Project with Gradle Files' để đồng bộ lại version ksp và kotlin 
+
+
+
+\*\*\*\*\*LƯU Ý: khi push chừa các file 'lib.versions.toml' và 'build.gradle.kts' để tránh phải sửa lại version mỗi khi pull code về máy
+
