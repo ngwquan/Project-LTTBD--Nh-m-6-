@@ -73,5 +73,5 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     // KSP processor (thay thế cho kapt)
     ksp("androidx.room:room-compiler:$room_version")
-
-}
+    // MPAndroidChart Library
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")}
