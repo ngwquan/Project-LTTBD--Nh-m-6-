@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cài đặt hạn mức chi tiêu"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etSpendingLimit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập hạn mức chi tiêu"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnSaveLimit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lưu hạn mức"/>
+
+    <Button
+        android:id="@+id/btnExportReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xuất báo cáo (CSV/Excel)"
+        android:layout_marginTop="32dp"/>
+</LinearLayout>
