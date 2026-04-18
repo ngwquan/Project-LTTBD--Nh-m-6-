@@ -14,10 +14,10 @@ interface WalletDao {
     suspend fun insert(wallet: WalletEntity)
 
     @Query("SELECT * FROM wallets WHERE user_id = :userId")
-    suspend fun getByUser(userId: String): List<WalletEntity>
+    suspend fun getByUser(userId: Long): List<WalletEntity>
 
     @Query("SELECT * FROM wallets WHERE wallet_id = :id")
-    suspend fun getById(id: String): WalletEntity?
+    suspend fun getById(id: Long): WalletEntity?
 
     @Update
     suspend fun update(wallet: WalletEntity)

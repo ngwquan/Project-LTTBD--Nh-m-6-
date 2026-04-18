@@ -10,15 +10,15 @@ class TransactionRepository(
         transactionDao.insert(transaction)
     }
 
-    suspend fun getTransactions(userId: String): List<TransactionEntity> {
+    suspend fun getTransactions(userId: Long): List<TransactionEntity> {
         return transactionDao.getByUser(userId)
     }
 
-    suspend fun getTransactionsByWallet(walletId: String): List<TransactionEntity> {
+    suspend fun getTransactionsByWallet(walletId: Long): List<TransactionEntity> {
         return transactionDao.getByWallet(walletId)
     }
 
-    suspend fun getTotalExpense(userId: String): Double {
+    suspend fun getTotalExpense(userId: Long): Double {
         return transactionDao.getTotalExpense(userId) ?: 0.0
     }
 

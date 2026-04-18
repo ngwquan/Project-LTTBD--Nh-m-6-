@@ -14,7 +14,7 @@ interface SavingGoalDao {
     suspend fun insert(goal: SavingGoalEntity)
 
     @Query("SELECT * FROM saving_goals WHERE user_id = :userId")
-    suspend fun getByUser(userId: String): List<SavingGoalEntity>
+    suspend fun getByUser(userId: Long): List<SavingGoalEntity>
 
     @Update
     suspend fun update(goal: SavingGoalEntity)

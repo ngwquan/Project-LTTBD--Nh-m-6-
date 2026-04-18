@@ -10,7 +10,7 @@ class WalletRepository(
         walletDao.insert(wallet)
     }
 
-    suspend fun getWallets(userId: String): List<WalletEntity> {
+    suspend fun getWallets(userId: Long): List<WalletEntity> {
         return walletDao.getByUser(userId)
     }
 

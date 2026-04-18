@@ -10,29 +10,28 @@ import java.util.Date
     foreignKeys = [
         ForeignKey(
             entity = WalletEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["wallet_id"],
             childColumns = ["wallet_id"]
         ),
         ForeignKey(
             entity = CategoryEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["category_id"],
             childColumns = ["category_id"]
         )
     ]
 )
 data class TransactionEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "transaction_id")
-    val id: String,
+    val id: Long = 0,
     @ColumnInfo(name = "user_id")
-    val userId: String,
+    val userId: Long,
     @ColumnInfo(name = "wallet_id")
-    val walletId: String,
+    val walletId: Long,
     @ColumnInfo(name = "category_id")
-    val categoryId: String,
+    val categoryId: Long,
     val amount: Double,
     val type: String,
     val note: String?,
-
-    val transactionDate: Date
+    val transactionDate: Long
 )

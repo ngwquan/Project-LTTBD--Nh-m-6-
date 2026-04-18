@@ -10,7 +10,7 @@ class UserRepository(
         userDao.insert(user)
     }
 
-    suspend fun getUser(id: String): UserEntity? {
+    suspend fun getUser(id: Long): UserEntity? {
         return userDao.getById(id)
     }
 

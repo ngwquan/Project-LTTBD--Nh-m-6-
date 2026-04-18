@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"/>
 
                 <EditText
-                    android:id="@+id/edtTen"
+                    android:id="@+id/edtName"
                     android:hint="Họ và tên"
                     android:padding="14dp"
                     android:background="@drawable/bg_input"

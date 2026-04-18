@@ -3,44 +3,44 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
-import java.sql.Date
+import java.util.Date
 
 @Entity(
     tableName = "recurring_transactions",
     foreignKeys = [
         ForeignKey(
             entity = UserEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["user_id"],
             childColumns = ["user_id"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = WalletEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["wallet_id"],
             childColumns = ["wallet_id"]
         ),
         ForeignKey(
             entity = CategoryEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["category_id"],
             childColumns = ["category_id"]
         )
     ]
 )
 
 data class RecurringTransactionEntity (
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "recurring_transaction_id")
-    val id: String,
+    val id: Long = 0,
     @ColumnInfo(name = "user_id")
-    val userId: String,
+    val userId: Long,
     @ColumnInfo(name = "wallet_id")
-    val walletId: String,
+    val walletId: Long,
     @ColumnInfo(name = "category_id")
-    val categoryId: String,
+    val categoryId: Long,
     val amount: Double,
     val type: String,
     val note: String,
     val frequency: String,
-    val nextDate: Date,
+    val nextDate: Long,
     val isActive: Boolean
 )

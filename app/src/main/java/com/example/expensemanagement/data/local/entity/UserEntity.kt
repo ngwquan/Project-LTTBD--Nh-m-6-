@@ -6,12 +6,12 @@ import java.util.Date
 
 @Entity(tableName = "users")
 data class UserEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "user_id")
-    val id: String,
+    val id: Long = 0,
     val fullName: String,
     val email: String,
     val passwordHash: String,
-    val currency: String,
-    val createdAt: Date
+    val currency: String = "VND",
+    val createdAt: Long = System.currentTimeMillis()
 )

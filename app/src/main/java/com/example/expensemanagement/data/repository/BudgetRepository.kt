@@ -10,7 +10,7 @@ class BudgetRepository(
         budgetDao.insert(budget)
     }
 
-    suspend fun getBudgets(userId: String): List<BudgetEntity> {
+    suspend fun getBudgets(userId: Long): List<BudgetEntity> {
         return budgetDao.getByUser(userId)
     }
 

@@ -10,7 +10,7 @@ class CategoryRepository(
         categoryDao.insert(category)
     }
 
-    suspend fun getCategories(userId: String): List<CategoryEntity> {
+    suspend fun getCategories(userId: Long): List<CategoryEntity> {
         return categoryDao.getByUser(userId)
     }
 

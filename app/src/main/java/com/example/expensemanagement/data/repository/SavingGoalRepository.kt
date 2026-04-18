@@ -10,7 +10,7 @@ class SavingGoalRepository(
         dao.insert(goal)
     }
 
-    suspend fun getGoals(userId: String): List<SavingGoalEntity> {
+    suspend fun getGoals(userId: Long): List<SavingGoalEntity> {
         return dao.getByUser(userId)
     }
 

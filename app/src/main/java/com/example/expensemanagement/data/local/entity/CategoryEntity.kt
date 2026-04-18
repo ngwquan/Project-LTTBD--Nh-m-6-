@@ -9,18 +9,18 @@ import androidx.room.ForeignKey
     foreignKeys = [
         ForeignKey(
             entity = UserEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["user_id"],
             childColumns = ["user_id"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class CategoryEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "category_id")
-    val id: String,
+    val id: Long = 0,
     @ColumnInfo(name = "user_id")
-    val userId: String,
+    val userId: Long,
     val name: String,
     val type: String,
     val isSystem: Boolean

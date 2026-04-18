@@ -10,20 +10,20 @@ import androidx.room.ColumnInfo
     foreignKeys = [
         ForeignKey(
         entity = UserEntity::class,
-        parentColumns = ["id"],
+        parentColumns = ["user_id"],
         childColumns = ["user_id"],
         onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class WalletEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "wallet_id")
-    val id: String,
+    val id: Long = 0,
     @ColumnInfo(name = "user_id")
-    val userId: String,
+    val userId: Long,
     val name: String,
     val type: String,
     val balance: Double,
-    val isDefault: Boolean
+    val isDefault: Boolean = true
 )

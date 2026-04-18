@@ -14,7 +14,7 @@ interface RecurringTransactionDao {
     suspend fun insert(recurring: RecurringTransactionEntity)
 
     @Query("SELECT * FROM recurring_transactions WHERE user_id = :userId")
-    suspend fun getByUser(userId: String): List<RecurringTransactionEntity>
+    suspend fun getByUser(userId: Long): List<RecurringTransactionEntity>
 
     @Update
     suspend fun update(recurring: RecurringTransactionEntity)

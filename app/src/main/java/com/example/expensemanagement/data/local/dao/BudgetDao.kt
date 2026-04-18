@@ -14,10 +14,10 @@ interface BudgetDao {
     suspend fun insert(budget: BudgetEntity)
 
     @Query("SELECT * FROM budgets WHERE user_id = :userId")
-    suspend fun getByUser(userId: String): List<BudgetEntity>
+    suspend fun getByUser(userId: Long): List<BudgetEntity>
 
     @Query("SELECT * FROM budgets WHERE category_id = :categoryId")
-    suspend fun getByCategory(categoryId: String): List<BudgetEntity>
+    suspend fun getByCategory(categoryId: Long): List<BudgetEntity>
 
     @Delete
     suspend fun delete(budget: BudgetEntity)

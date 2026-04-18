@@ -13,6 +13,15 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: CategoryEntity)
 
+<<<<<<< HEAD
+=======
+    @Query("SELECT * FROM categories WHERE user_id = :userId")
+    suspend fun getByUser(userId: Long): List<CategoryEntity>
+
+    @Query("SELECT * FROM categories WHERE category_id = :id")
+    suspend fun getById(id: Long): CategoryEntity?
+
+>>>>>>> dd2aa7f (Update insert data to user table when register)
     @Delete
     suspend fun delete(category: CategoryEntity)
 }

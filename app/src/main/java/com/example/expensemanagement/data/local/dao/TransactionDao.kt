@@ -18,16 +18,16 @@ interface TransactionDao {
         WHERE user_id = :userId 
         ORDER BY transactionDate DESC
     """)
-    suspend fun getByUser(userId: String): List<TransactionEntity>
+    suspend fun getByUser(userId: Long): List<TransactionEntity>
 
     @Query("SELECT * FROM transactions WHERE wallet_id = :walletId")
-    suspend fun getByWallet(walletId: String): List<TransactionEntity>
+    suspend fun getByWallet(walletId: Long): List<TransactionEntity>
 
     @Query("""
         SELECT SUM(amount) FROM transactions 
         WHERE user_id = :userId AND type = 'EXPENSE'
     """)
-    suspend fun getTotalExpense(userId: String): Double?
+    suspend fun getTotalExpense(userId: Long): Double?
 
     @Delete
     suspend fun delete(transaction: TransactionEntity)

@@ -10,7 +10,7 @@ class RecurringTransactionRepository(
         dao.insert(recurring)
     }
 
-    suspend fun getRecurring(userId: String): List<RecurringTransactionEntity> {
+    suspend fun getRecurring(userId: Long): List<RecurringTransactionEntity> {
         return dao.getByUser(userId)
     }
 

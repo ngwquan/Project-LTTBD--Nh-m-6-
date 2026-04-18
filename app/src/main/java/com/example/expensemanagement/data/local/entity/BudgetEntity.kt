@@ -3,34 +3,34 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
-import java.sql.Date
+import java.util.Date
 
 @Entity(
     tableName = "budgets",
     foreignKeys = [
         ForeignKey(
             entity = UserEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["user_id"],
             childColumns = ["user_id"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = CategoryEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["category_id"],
             childColumns = ["category_id"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class BudgetEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "budget_id")
-    val id: String,
+    val id: Long = 0,
     @ColumnInfo(name = "user_id")
-    val userId: String,
+    val userId: Long,
     @ColumnInfo(name = "category_id")
-    val categoryId: String,
+    val categoryId: Long,
     val amount: Double,
-    val startDate: Date,
-    val endDate: Boolean
+    val startDate: Long,
+    val endDate: Long
 )

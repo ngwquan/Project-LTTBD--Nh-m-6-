@@ -3,36 +3,36 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
-import java.sql.Date
+import java.util.Date
 
 @Entity(
     tableName = "saving_goals",
     foreignKeys = [
         ForeignKey (
             entity = UserEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["user_id"],
             childColumns =  ["user_id"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey (
             entity = WalletEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["wallet_id"],
             childColumns = ["wallet_id"]
         )
     ]
 )
 
 data class SavingGoalEntity (
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "saving_goal_id")
-    val id: String,
+    val id: Long = 0,
     @ColumnInfo(name = "user_id")
-    val userId: String,
+    val userId: Long,
     @ColumnInfo(name = "wallet_id")
-    val walletId: String,
+    val walletId: Long,
     val name: String,
     val targetAmount: Double,
     val currentAmount: Double,
-    val deadline: Date,
+    val deadline: Long,
     val status: String
 )
