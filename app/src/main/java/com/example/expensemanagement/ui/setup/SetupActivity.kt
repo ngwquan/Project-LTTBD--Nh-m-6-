@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
 import com.example.expensemanagement.ui.setup.SetupActivity
 import android.widget.EditText
+import com.example.expensemanagement.ui.main.MainActivity
 
 class SetupActivity : AppCompatActivity() {
 
@@ -44,6 +45,13 @@ class SetupActivity : AppCompatActivity() {
             val currency = spinner.selectedItem.toString()
 
             Toast.makeText(this, "Đã lưu: $money - $currency", Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("MONEY", currency)
+            intent.putExtra("CURRENCY", currency)
+            startActivity(intent)
+
+            finish()
         }
     }
 }

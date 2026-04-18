@@ -22,10 +22,15 @@ class CategoryActivity : AppCompatActivity() {
     private lateinit var adapter: CategoryAdapter
     private val db by lazy { AppDatabase.getDatabase(this) }
 
+    private var currentUserId: Long = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCategoryBinding.inflate(layoutInflater)
         setContentView(binding.root as View)
+
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        currentUserId = sharedPref.getLong("current_user_id", -1)
 
         setupRecyclerView()
         observeCategories()
@@ -71,7 +76,7 @@ class CategoryActivity : AppCompatActivity() {
             if (currentCategories.isEmpty()) {
                 val defaults = listOf("Ăn uống", "Đi chơi", "Du lịch", "Mua sắm", "Bạn bè")
                 defaults.forEach { name ->
-                    db.categoryDao().insert(CategoryEntity(name = name))
+                    db.categoryDao().insert(CategoryEntity(name = name, userId = currentUserId, type = "EXPENSE", isSystem = true))
                 }
             }
         }
@@ -79,7 +84,7 @@ class CategoryActivity : AppCompatActivity() {
 
     private fun insertCategory(name: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            db.categoryDao().insert(CategoryEntity(name = name))
+            db.categoryDao().insert(CategoryEntity(name = name, userId = currentUserId, type = "EXPENSE", isSystem = false))
             withContext(Dispatchers.Main) {
                 binding.edtCategoryName.text.clear()
                 Toast.makeText(this@CategoryActivity, "Đã thêm: $name", Toast.LENGTH_SHORT).show()

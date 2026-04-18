@@ -40,6 +40,11 @@ android {
 
     buildFeatures {
         compose = true
+        dataBinding = true
+        viewBinding = true
+    }
+    ksp {
+        arg("room.generateKotlin", "true")
     }
 }
 
@@ -65,13 +70,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    val room_version = "2.6.1"
-
-    // Core Room library
-    implementation("androidx.room:room-runtime:$room_version")
-    // Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
-    // KSP processor (thay thế cho kapt)
-    ksp("androidx.room:room-compiler:$room_version")
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
     // MPAndroidChart Library
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")}
