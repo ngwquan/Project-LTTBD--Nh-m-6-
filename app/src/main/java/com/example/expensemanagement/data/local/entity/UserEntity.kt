@@ -10,6 +10,7 @@ data class UserEntity(
     @ColumnInfo(name = "user_id")
     val id: Long = 0,
     val fullName: String,
+    val username: String,
     val email: String,
     val passwordHash: String,
     val currency: String = "VND",

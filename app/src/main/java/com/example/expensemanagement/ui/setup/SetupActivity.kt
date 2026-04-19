@@ -1,5 +1,6 @@
 package com.example.expensemanagement.ui.setup
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
 import com.example.expensemanagement.ui.setup.SetupActivity
 import android.widget.EditText
+import android.widget.TextView
 import com.example.expensemanagement.ui.main.MainActivity
 
 class SetupActivity : AppCompatActivity() {
@@ -18,9 +20,14 @@ class SetupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup)
 
+        val txtWelcome = findViewById<TextView>(R.id.txtWelcome)
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val username = sharedPref.getString("username", "")
         val spinner = findViewById<Spinner>(R.id.spinnerCurrency)
         val edtMoney = findViewById<EditText>(R.id.edtMoney)
         val btnSave = findViewById<Button>(R.id.btnSave)
+
+        txtWelcome.text = "Xin chào, $username"
 
         // spinner chọn đơn vị tiền
         val adapter = ArrayAdapter.createFromResource(
