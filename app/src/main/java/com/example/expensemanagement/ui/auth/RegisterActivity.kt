@@ -2,10 +2,13 @@ package com.example.expensemanagement.ui.auth
 
 import android.content.Context
 import android.os.Bundle
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.expensemanagement.R
 import androidx.lifecycle.lifecycleScope
+import com.example.expensemanagement.R
 import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.data.local.entity.UserEntity
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +27,7 @@ class RegisterActivity : AppCompatActivity() {
         val edtConfirm = findViewById<EditText>(R.id.edtConfirm)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val txtLogin = findViewById<TextView>(R.id.txtLogin)
+
         val db = AppDatabase.getDatabase(this)
         val userDao = db.userDao()
 
@@ -37,56 +41,61 @@ class RegisterActivity : AppCompatActivity() {
             val password = edtPassword.text.toString().trim()
             val confirm = edtConfirm.text.toString().trim()
 
-            if (email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
+            // 1. Kiểm tra đầu vào
+            if (email.isEmpty()) {
+                edtEmail.error = "Vui lòng nhập email"
                 return@setOnClickListener
             }
-
+            if (name.isEmpty()) {
+                edtName.error = "Vui lòng nhập họ tên"
+                return@setOnClickListener
+            }
+            if (password.isEmpty()) {
+                edtPassword.error = "Vui lòng nhập mật khẩu"
+                return@setOnClickListener
+            }
             if (password != confirm) {
                 Toast.makeText(this, "Mật khẩu nhập lại không khớp", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Sử dụng Coroutine để thao tác với Database
+            // 2. Thực hiện đăng ký
             lifecycleScope.launch(Dispatchers.IO) {
-                // 1. Kiểm tra email đã tồn tại chưa
-                val existingUser = userDao.getUserByEmail(email)
-
-                withContext(Dispatchers.Main) {
+                try {
+                    // Kiểm tra email tồn tại
+                    val existingUser = userDao.getUserByEmail(email)
+                    
                     if (existingUser != null) {
-                        Toast.makeText(this@RegisterActivity, "Email này đã được đăng ký!", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@RegisterActivity, "Email này đã được đăng ký!", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        // 2. Nếu chưa tồn tại, tiến hành lưu vào Database
-                        saveUserToDatabase(email, password, name)
+                        // Tạo và lưu user mới
+                        val newUser = UserEntity(
+                            fullName = name,
+                            email = email,
+                            passwordHash = password // Lưu trực tiếp theo yêu cầu project hiện tại
+                        )
+                        userDao.insert(newUser)
+
+                        // Lưu vào SharedPreferences để đồng bộ với logic LoginActivity cũ (nếu cần)
+                        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                        with(sharedPref.edit()) {
+                            putString("email", email)
+                            putString("password", password)
+                            apply()
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@RegisterActivity, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@RegisterActivity, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
-        }
-    }
-    private fun saveUserToDatabase(email: String, password: String, name:String) {
-        val db = AppDatabase.getDatabase(this)
-        val userDao = db.userDao()
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            val newUser = UserEntity(
-                email = email,
-                passwordHash = password,
-                fullName = name
-            )
-            userDao.insert(newUser)
-
-            withContext(Dispatchers.Main) {
-                // Đồng thời vẫn lưu vào SharedPreferences để giữ logic cũ nếu cần (tùy chọn)
-                val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                with(sharedPref.edit()) {
-                    putString("fullName", name)
-                    putString("email", email)
-                    putString("password", password)
-                    apply()
-                }
-
-                Toast.makeText(this@RegisterActivity, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
-                finish()
             }
         }
     }
