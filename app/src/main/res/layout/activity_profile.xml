@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA"
+    tools:ignore="HardcodedText,ContentDescription,UseAppTint">
+
+    <RelativeLayout
+        android:id="@+id/headerProfile"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:background="#2196F3"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:text="Hồ sơ của tôi"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerProfile"
+        android:layout_marginTop="-30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                android:layout_marginBottom="20dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="75dp"
+                        android:layout_height="75dp"
+                        android:src="@android:drawable/ic_menu_myplaces"
+                        app:tint="#2196F3" />
+                    <TextView
+                        android:id="@+id/tvUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="tranquan25062005"
+                        android:textColor="#333333"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Chỉnh sửa Hồ sơ"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        app:backgroundTint="#2196F3"
+                        app:cornerRadius="27dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TÀI CHÍNH" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:layout_marginStart="8dp" android:layout_marginBottom="8dp"/>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="3dp"
+                android:layout_marginBottom="20dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i1" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_save" />
+                        <TextView android:layout_toEndOf="@id/i1" style="@style/ProfileTextStyle" android:text="Ví của tôi" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i2" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_share" />
+                        <TextView android:layout_toEndOf="@id/i2" style="@style/ProfileTextStyle" android:text="Nhóm" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i3" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_recent_history" />
+                        <TextView android:layout_toEndOf="@id/i3" style="@style/ProfileTextStyle" android:text="Số nợ" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TIỆN ÍCH" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:layout_marginStart="8dp" android:layout_marginBottom="8dp"/>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="3dp"
+                android:layout_marginBottom="20dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i4" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_today" />
+                        <TextView android:layout_toEndOf="@id/i4" style="@style/ProfileTextStyle" android:text="Sự kiện" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i5" style="@style/ProfileIconStyle" android:src="@android:drawable/stat_notify_sync" />
+                        <TextView android:layout_toEndOf="@id/i5" style="@style/ProfileTextStyle" android:text="Giao dịch định kỳ" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i6" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_agenda" />
+                        <TextView android:layout_toEndOf="@id/i6" style="@style/ProfileTextStyle" android:text="Hóa đơn" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i7" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_manage" />
+                        <TextView android:layout_toEndOf="@id/i7" style="@style/ProfileTextStyle" android:text="Công cụ" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i8" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_compass" />
+                        <TextView android:layout_toEndOf="@id/i8" style="@style/ProfileTextStyle" android:text="Chế độ du lịch" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="KHÁC" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:layout_marginStart="8dp" android:layout_marginBottom="8dp"/>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="3dp"
+                android:layout_marginBottom="40dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i9" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_view" />
+                        <TextView android:layout_toEndOf="@id/i9" style="@style/ProfileTextStyle" android:text="Cửa hàng" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i10" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_help" />
+                        <TextView android:layout_toEndOf="@id/i10" style="@style/ProfileTextStyle" android:text="Hỗ trợ" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i11" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_preferences" />
+                        <TextView android:layout_toEndOf="@id/i11" style="@style/ProfileTextStyle" android:text="Cài đặt" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+                    <RelativeLayout style="@style/ProfileItemStyle">
+                        <ImageView android:id="@+id/i12" style="@style/ProfileIconStyle" android:src="@android:drawable/ic_menu_info_details" />
+                        <TextView android:layout_toEndOf="@id/i12" style="@style/ProfileTextStyle" android:text="Giới thiệu" />
+                        <ImageView style="@style/ProfileArrowStyle" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
