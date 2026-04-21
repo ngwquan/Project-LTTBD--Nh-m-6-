@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
+import com.example.expensemanagement.ui.analytics.AnalyticsActivity
 import com.example.expensemanagement.ui.history.HistoryActivity
 import com.example.expensemanagement.ui.profile.ProfileActivity
 
@@ -40,13 +41,8 @@ class MainActivity : AppCompatActivity() {
 
         // --- Nút THỐNG KÊ ---
         btnNavStatistics.setOnClickListener {
-            // Vì bạn đã xóa CategoryActivity, tôi chuyển hướng tạm thời sang HistoryActivity
-            // để app không bị lỗi biên dịch.
-            val intent = Intent(this, HistoryActivity::class.java)
+            val intent = Intent(this, AnalyticsActivity::class.java)
             startActivity(intent)
-
-            // Thông báo để bạn biết trang này đang được thay thế
-            Toast.makeText(this, "Tính năng Thống kê đang cập nhật", Toast.LENGTH_SHORT).show()
         }
 
         // --- Nút PROFILE (Mở trang Hồ sơ cá nhân) ---

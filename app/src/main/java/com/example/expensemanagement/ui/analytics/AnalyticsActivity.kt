@@ -1,8 +1,14 @@
 package com.example.expensemanagement.ui.analytics
 
+import android.content.Intent
+import android.widget.LinearLayout
+import android.widget.Toast
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
+import com.example.expensemanagement.ui.history.HistoryActivity
+import com.example.expensemanagement.ui.main.MainActivity
+import com.example.expensemanagement.ui.profile.ProfileActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.BarData
@@ -24,6 +30,36 @@ class AnalyticsActivity : AppCompatActivity() {
 
         setupPieChart(pieChart)
         setupBarChart(barChart)
+
+        // Bottom Navigation Click Listeners
+        val btnNavExpense = findViewById<LinearLayout>(R.id.btnNavExpense)
+        val btnNavStatistics = findViewById<LinearLayout>(R.id.btnNavStatistics)
+        val btnNavProfile = findViewById<LinearLayout>(R.id.btnNavProfile)
+        val fabAdd = findViewById<android.view.View>(R.id.fab_add)
+
+        // --- Nút CHI TIÊU ---
+        btnNavExpense?.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
+
+        // --- Nút THỐNG KÊ ---
+        btnNavStatistics?.setOnClickListener {
+            val intent = Intent(this, AnalyticsActivity::class.java)
+            startActivity(intent)
+        }
+
+        // --- Nút PROFILE ---
+        btnNavProfile?.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        // --- Nút FAB (Mở trang thêm chi tiêu) ---
+        fabAdd?.setOnClickListener {
+            val intent = Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupPieChart(pieChart: PieChart) {
