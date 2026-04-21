@@ -71,6 +71,7 @@
             android:weightSum="5">
 
             <LinearLayout
+                android:id="@+id/btnNavOverview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

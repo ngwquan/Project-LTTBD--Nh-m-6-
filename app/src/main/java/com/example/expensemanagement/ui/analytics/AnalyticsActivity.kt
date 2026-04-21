@@ -32,30 +32,37 @@ class AnalyticsActivity : AppCompatActivity() {
         setupBarChart(barChart)
 
         // Bottom Navigation Click Listeners
-        val btnNavExpense = findViewById<LinearLayout>(R.id.btnNavExpense)
-        val btnNavStatistics = findViewById<LinearLayout>(R.id.btnNavStatistics)
-        val btnNavProfile = findViewById<LinearLayout>(R.id.btnNavProfile)
+        val btnNavOverview = findViewById<android.view.View>(R.id.btnNavOverview)
+        val btnNavExpense = findViewById<android.view.View>(R.id.btnNavExpense)
+        val btnNavStatistics = findViewById<android.view.View>(R.id.btnNavStatistics)
+        val btnNavProfile = findViewById<android.view.View>(R.id.btnNavProfile)
         val fabAdd = findViewById<android.view.View>(R.id.fab_add)
 
-        // --- Nút CHI TIÊU ---
+        // TONG QUAN
+        btnNavOverview?.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
+        }
+        // CHI TIEU
         btnNavExpense?.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
+            overridePendingTransition(0, 0)
         }
-
-        // --- Nút THỐNG KÊ ---
+        // THONG KE
         btnNavStatistics?.setOnClickListener {
-            val intent = Intent(this, AnalyticsActivity::class.java)
-            startActivity(intent)
         }
-
-        // --- Nút PROFILE ---
+        // PROFILE
         btnNavProfile?.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
+            overridePendingTransition(0, 0)
         }
-
-        // --- Nút FAB (Mở trang thêm chi tiêu) ---
+        // FAB ADD
         fabAdd?.setOnClickListener {
             val intent = Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java)
             startActivity(intent)

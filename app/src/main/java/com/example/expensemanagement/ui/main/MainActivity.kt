@@ -22,9 +22,12 @@ class MainActivity : AppCompatActivity() {
 
         // 2. Ánh xạ các View từ XML
         val txtWelcome = findViewById<TextView>(R.id.txtWelcome)
-        val btnNavExpense = findViewById<LinearLayout>(R.id.btnNavExpense)
-        val btnNavStatistics = findViewById<LinearLayout>(R.id.btnNavStatistics)
-        val btnNavProfile = findViewById<LinearLayout>(R.id.btnNavProfile)
+
+        val btnNavOverview = findViewById<android.view.View>(R.id.btnNavOverview)
+        val btnNavExpense = findViewById<android.view.View>(R.id.btnNavExpense)
+        val btnNavStatistics = findViewById<android.view.View>(R.id.btnNavStatistics)
+        val btnNavProfile = findViewById<android.view.View>(R.id.btnNavProfile)
+        val fabAdd = findViewById<android.view.View>(R.id.fab_add)
 
         // 3. Hiển thị thông tin người dùng từ bộ nhớ tạm
         val userPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
@@ -33,21 +36,33 @@ class MainActivity : AppCompatActivity() {
 
         // 4. XỬ LÝ SỰ KIỆN CLICK CHO THANH ĐIỀU HƯỚNG DƯỚI
 
-        // --- Nút CHI TIÊU (Mở trang Lịch sử / Onboarding) ---
-        btnNavExpense.setOnClickListener {
+        // TONG QUAN
+        btnNavOverview?.setOnClickListener {
+        }
+        // CHI TIEU
+        btnNavExpense?.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
+            overridePendingTransition(0, 0)
         }
-
-        // --- Nút THỐNG KÊ ---
-        btnNavStatistics.setOnClickListener {
+        // THONG KE
+        btnNavStatistics?.setOnClickListener {
             val intent = Intent(this, AnalyticsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
+            overridePendingTransition(0, 0)
         }
-
-        // --- Nút PROFILE (Mở trang Hồ sơ cá nhân) ---
-        btnNavProfile.setOnClickListener {
+        // PROFILE
+        btnNavProfile?.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
+        }
+        // FAB ADD
+        fabAdd?.setOnClickListener {
+            val intent = Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java)
             startActivity(intent)
         }
 
