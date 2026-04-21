@@ -33,8 +33,7 @@
             android:text="0"
             android:textColor="@android:color/black"
             android:textSize="48sp"
-            android:textStyle="bold"
-            tools:text="150,000" />
+            android:textStyle="bold" />
 
         <View
             android:layout_width="match_parent"
