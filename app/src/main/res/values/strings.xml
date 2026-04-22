@@ -5,4 +5,11 @@
     <string name="email">Email</string>
     <string name="mat_khau">Mật khẩu</string>
     <string name="nhap_lai_mat_khau">Nhập lại mật khẩu</string>
+    <string name="money_format">%1$s %2$s</string>
+    <string name="welcome_user">Xin chào, %1$s</string>
+    <string name="welcome_back">Chào mừng %1$s quay trở lại!</string>
+    <string-array name="transaction_type">
+        <item>Chi tiêu</item>
+        <item>Thu nhập</item>
+    </string-array>
 </resources>
