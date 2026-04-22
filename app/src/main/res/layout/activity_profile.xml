@@ -147,6 +147,22 @@
                         <TextView android:layout_toEndOf="@id/i8" style="@style/ProfileTextStyle" android:text="Chế độ du lịch" />
                         <ImageView style="@style/ProfileArrowStyle" />
                     </RelativeLayout>
+                    <View style="@style/ProfileDividerStyle" />
+
+                    <RelativeLayout
+                        android:id="@+id/btnLogout"
+                        style="@style/ProfileItemStyle">
+
+                        <ImageView
+                            style="@style/ProfileIconStyle"
+                            android:src="@android:drawable/ic_lock_power_off"
+                            app:tint="#F44336" />
+
+                        <TextView
+                            style="@style/ProfileTextStyle"
+                            android:text="Đăng xuất"
+                            android:textColor="#F44336" />
+                    </RelativeLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

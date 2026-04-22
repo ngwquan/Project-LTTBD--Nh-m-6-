@@ -6,13 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F7FA"
-    tools:ignore="HardcodedText,ContentDescription">
+    tools:ignore="HardcodedText,ContentDescription,SpellCheckingInspection">
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:paddingBottom="110dp"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -43,14 +47,37 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
-                    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ví của tôi" android:textColor="#757575" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Xem tất cả" android:textColor="#2196F3" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ví của tôi"
+                            android:textColor="#757575" />
                     </RelativeLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="#EEEEEE" />
-                    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tiền mặt" android:textColor="#212121" android:textSize="16sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0.00 ₫" android:textColor="#212121" android:textSize="16sp" android:textStyle="bold" />
+                    <View android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="#EEEEEE" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tiền mặt"
+                            android:textColor="#212121"
+                            android:textSize="16sp" />
+                        <TextView
+                            android:id="@+id/txtMoney"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="0.00 ₫"
+                            android:textColor="#212121"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
                     </RelativeLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -84,6 +111,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:orientation="horizontal"
+                        android:baselineAligned="false"
                         android:weightSum="2">
 
                         <LinearLayout
@@ -163,14 +191,16 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/bottomNavCard"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_marginHorizontal="12dp"
         android:layout_marginBottom="20dp"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="35dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -198,7 +228,7 @@
                     android:layout_height="wrap_content"
                     android:text="Tổng quan"
                     android:textColor="#2196F3"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -221,10 +251,13 @@
                     android:layout_height="wrap_content"
                     android:text="Chi tiêu"
                     android:textColor="#757575"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
 
-            <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
             <LinearLayout
                 android:id="@+id/btnNavStatistics"
@@ -236,8 +269,17 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_manage" app:tint="#757575" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thống kê" android:textColor="#757575" android:textSize="10sp" />
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@android:drawable/ic_menu_manage"
+                    app:tint="#757575" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thống kê"
+                    android:textColor="#757575"
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -260,7 +302,7 @@
                     android:layout_height="wrap_content"
                     android:text="Profile"
                     android:textColor="#757575"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>

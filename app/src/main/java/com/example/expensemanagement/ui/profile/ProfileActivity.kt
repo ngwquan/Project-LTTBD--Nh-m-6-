@@ -10,6 +10,8 @@ import com.example.expensemanagement.ui.analytics.AnalyticsActivity
 import com.example.expensemanagement.ui.history.HistoryActivity
 import com.example.expensemanagement.ui.main.MainActivity
 import com.google.android.material.button.MaterialButton
+import android.view.View
+import com.example.expensemanagement.ui.auth.LoginActivity
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -31,6 +33,23 @@ class ProfileActivity : AppCompatActivity() {
         // 4. Xử lý sự kiện nút Chỉnh sửa hồ sơ
         btnEditProfile.setOnClickListener {
             Toast.makeText(this, "Tính năng chỉnh sửa đang được phát triển!", Toast.LENGTH_SHORT).show()
+        }
+
+        val btnLogout = findViewById<android.view.View>(R.id.btnLogout)
+
+        btnLogout.setOnClickListener {
+
+            val userPrefs = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+
+            // Xóa dữ liệu user
+            userPrefs.edit().clear().apply()
+
+            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show()
+
+            // Chuyển về Login
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         }
 
         val btnNavOverview = findViewById<android.view.View>(R.id.btnNavOverview)

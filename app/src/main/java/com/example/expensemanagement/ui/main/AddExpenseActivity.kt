@@ -1,166 +1,87 @@
 package com.example.expensemanagement.ui.main
 
-import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import com.example.expensemanagement.data.local.database.AppDatabase
-import com.example.expensemanagement.data.local.entity.TransactionEntity
-import com.example.expensemanagement.databinding.ActivityAddExpenseBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.expensemanagement.R
 
 class AddExpenseActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityAddExpenseBinding
-    private var currentAmountString = "0"
-    private var selectedDate: Long = System.currentTimeMillis()
+
+    private var currentAmount = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddExpenseBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_add_expense)
 
-        setupUI()
-        setupKeypad()
-        setupDatePicker()
-        setupSaveButton()
-    }
+        val tvAmount = findViewById<TextView>(R.id.tvAmountDisplay)
+        val spinnerType = findViewById<Spinner>(R.id.spinnerType)
+        val btnSave = findViewById<Button>(R.id.btnSaveExpense)
 
-    private fun setupUI() {
-        updateAmountDisplay()
-        updateDateDisplay()
-    }
+        // Spinner loại giao dịch
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.transaction_type,
+            android.R.layout.simple_spinner_item
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerType.adapter = adapter
 
-    private fun setupKeypad() {
-        // Danh sách các nút số từ 0-9
-        val numButtons = listOf(
-            binding.btn0, binding.btn1, binding.btn2, binding.btn3, binding.btn4,
-            binding.btn5, binding.btn6, binding.btn7, binding.btn8, binding.btn9
+
+        val numberButtons = listOf(
+            R.id.btn0, R.id.btn1, R.id.btn2, R.id.btn3, R.id.btn4,
+            R.id.btn5, R.id.btn6, R.id.btn7, R.id.btn8, R.id.btn9
         )
 
-        numButtons.forEach { button ->
-            button.setOnClickListener {
-                val digit = button.text.toString()
-                if (currentAmountString == "0") {
-                    currentAmountString = digit
-                } else {
-                    currentAmountString += digit
-                }
-                updateAmountDisplay()
+        for (id in numberButtons) {
+            findViewById<Button>(id).setOnClickListener {
+                val number = (it as Button).text.toString()
+                currentAmount += number
+                tvAmount.text = currentAmount
             }
         }
 
-        // Nút xóa (Clear)
-        binding.btnC.setOnClickListener {
-            currentAmountString = "0"
-            updateAmountDisplay()
+        // Clear
+        findViewById<Button>(R.id.btnC).setOnClickListener {
+            currentAmount = ""
+            tvAmount.text = "0"
         }
-    }
 
-    private fun updateAmountDisplay() {
-        binding.tvAmountDisplay.text = currentAmountString
-    }
+        btnSave.setOnClickListener {
 
-    private fun setupDatePicker() {
-        binding.btnSelectDate.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = selectedDate
-            
-            DatePickerDialog(
-                this,
-                { _, year, month, dayOfMonth ->
-                    val selectedCalendar = Calendar.getInstance()
-                    selectedCalendar.set(year, month, dayOfMonth)
-                    selectedDate = selectedCalendar.timeInMillis
-                    updateDateDisplay()
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-    }
-
-    private fun updateDateDisplay() {
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        binding.tvDate.text = sdf.format(Date(selectedDate))
-    }
-
-    private fun setupSaveButton() {
-        binding.btnSaveExpense.setOnClickListener {
-            val amount = currentAmountString.toDoubleOrNull() ?: 0.0
-            val note = binding.edtNote.text.toString().trim()
-
-            // 1. Kiểm tra số tiền
-            if (amount <= 0) {
-                Toast.makeText(this, "Vui lòng nhập số tiền hợp lệ", Toast.LENGTH_SHORT).show()
+            if (currentAmount.isEmpty()) {
+                Toast.makeText(this, "Nhập số tiền", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 2. Lấy userId từ SharedPreferences
-            val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            val userId = sharedPref.getLong("current_user_id", -1L)
+            val amount = currentAmount.toLong()
+            val type = spinnerType.selectedItem.toString()
 
-            if (userId == -1L) {
-                Toast.makeText(this, "Lỗi: Không tìm thấy phiên đăng nhập", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val userId = globalPref.getLong("current_user_id", -1)
+            val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
+
+            val currentMoney = userPrefs.getString("money", "0")?.toLongOrNull() ?: 0
+
+            val newMoney = if (type == "Chi tiêu") {
+                currentMoney - amount
+            } else {
+                currentMoney + amount
             }
 
-            // 3. Thực hiện lưu vào database
-            lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    val db = AppDatabase.getDatabase(this@AddExpenseActivity)
-                    
-                    // Lấy ví (Wallet) đầu tiên của user để gán vào giao dịch
-                    val wallets = db.walletDao().getByUser(userId)
-                    if (wallets.isEmpty()) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@AddExpenseActivity, "Vui lòng tạo ví trong ứng dụng trước", Toast.LENGTH_LONG).show()
-                        }
-                        return@launch
-                    }
-                    val walletId = wallets[0].id
+            userPrefs.edit()
+                .putString("money", newMoney.toString())
+                .apply()
 
-                    // Lấy danh mục (Category) đầu tiên của user
-                    val categories = db.categoryDao().getByUser(userId)
-                    if (categories.isEmpty()) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@AddExpenseActivity, "Vui lòng tạo danh mục chi tiêu trước", Toast.LENGTH_LONG).show()
-                        }
-                        return@launch
-                    }
-                    val categoryId = categories[0].id
+            val oldHistory = userPrefs.getString("history", "") ?: ""
+            val newRecord = "$type - $amount\n"
 
-                    // Tạo đối tượng TransactionEntity (Thành viên 2 không sửa file Entity)
-                    val transaction = TransactionEntity(
-                        userId = userId,
-                        walletId = walletId,
-                        categoryId = categoryId,
-                        amount = amount,
-                        type = "EXPENSE",
-                        note = note,
-                        transactionDate = selectedDate
-                    )
+            userPrefs.edit()
+                .putString("history", oldHistory + newRecord)
+                .apply()
 
-                    // Gọi Dao để lưu
-                    db.transactionDao().insert(transaction)
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@AddExpenseActivity, "Lưu chi tiêu thành công!", Toast.LENGTH_SHORT).show()
-                        setResult(RESULT_OK) // Trả về kết quả cho MainActivity để reload data
-                        finish()
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@AddExpenseActivity, "Lỗi hệ thống: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+            Toast.makeText(this, "Đã lưu!", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 }

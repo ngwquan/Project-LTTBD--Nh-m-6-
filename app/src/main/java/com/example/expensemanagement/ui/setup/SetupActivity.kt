@@ -3,16 +3,11 @@ package com.example.expensemanagement.ui.setup
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
-import com.example.expensemanagement.ui.setup.SetupActivity
-import android.widget.EditText
-import android.widget.TextView
 import com.example.expensemanagement.ui.main.MainActivity
+import com.example.expensemanagement.utils.MoneyUtils
 
 class SetupActivity : AppCompatActivity() {
 
@@ -21,15 +16,19 @@ class SetupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_setup)
 
         val txtWelcome = findViewById<TextView>(R.id.txtWelcome)
-        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("username", "")
         val spinner = findViewById<Spinner>(R.id.spinnerCurrency)
         val edtMoney = findViewById<EditText>(R.id.edtMoney)
         val btnSave = findViewById<Button>(R.id.btnSave)
 
-        txtWelcome.text = "Xin chào, $username"
+        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = globalPref.getLong("current_user_id", -1)
 
-        // spinner chọn đơn vị tiền
+        val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
+        val username = userPrefs.getString("username", "User")
+
+        txtWelcome.text = getString(R.string.welcome_user, username)
+
+        // Spinner
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.currency_list,
@@ -37,9 +36,7 @@ class SetupActivity : AppCompatActivity() {
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
-        spinner.setSelection (0)
 
-        // button bắt đầu sử dụng
         btnSave.setOnClickListener {
 
             val money = edtMoney.text.toString()
@@ -51,13 +48,17 @@ class SetupActivity : AppCompatActivity() {
 
             val currency = spinner.selectedItem.toString()
 
-            Toast.makeText(this, "Đã lưu: $money - $currency", Toast.LENGTH_SHORT).show()
+            userPrefs.edit()
+                .putString("money", money)
+                .putString("currency", currency)
+                .putBoolean("isSetupDone", true)
+                .apply()
 
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("MONEY", currency)
-            intent.putExtra("CURRENCY", currency)
-            startActivity(intent)
+            val formattedMoney = MoneyUtils.format(money, currency)
 
+            Toast.makeText(this, "Đã lưu: $formattedMoney", Toast.LENGTH_SHORT).show()
+
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
     }

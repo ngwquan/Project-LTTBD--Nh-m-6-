@@ -53,30 +53,6 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-//            // lấy dữ liệu đã đăng ký từ SharedPreferences
-//            val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-//            val savedEmail = sharedPref.getString("email", null)
-//            val savedPassword = sharedPref.getString("password", null)
-//
-//            // kiểm tra tài khoản (Admin mặc định hoặc tài khoản đã đăng ký)
-//            val isDefaultAdmin = (email == "admin" && password == "admin")
-//            val isRegisteredUser = (email == savedEmail && password == savedPassword)
-//
-//            if (isDefaultAdmin || isRegisteredUser) {
-//                // Lưu trạng thái đã đăng nhập (nếu cần dùng cho MainActivity check)
-//                if (isDefaultAdmin && savedEmail == null) {
-//                    with(sharedPref.edit()) {
-//                        putString("email", email)
-//                        apply()
-//                    }
-//                }
-//
-//                Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
-//                startActivity(Intent(this, SetupActivity::class.java))
-//                finish()
-//            } else {
-//                Toast.makeText(this, "Email hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show()
-//            }
             // Sử dụng Coroutine để kiểm tra Database
             lifecycleScope.launch(Dispatchers.IO) {
                 // 1. Kiểm tra tài khoản admin mặc định
@@ -107,16 +83,24 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun proceedToSetup(userId: Long) {
-        // Lưu userId vào SharedPreferences để các màn hình sau (Setup, Main) biết ai đang dùng
-        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putLong("current_user_id", userId)
-            apply()
-        }
+
+        val sharedPref = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
+
+        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        globalPref.edit()
+            .putLong("current_user_id", userId)
+            .apply()
+
+        val isSetupDone = sharedPref.getBoolean("isSetupDone", false)
 
         Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, SetupActivity::class.java)
-        startActivity(intent)
+
+        if (isSetupDone) {
+            startActivity(Intent(this, com.example.expensemanagement.ui.main.MainActivity::class.java))
+        } else {
+            startActivity(Intent(this, SetupActivity::class.java))
+        }
+
         finish()
     }
 }
