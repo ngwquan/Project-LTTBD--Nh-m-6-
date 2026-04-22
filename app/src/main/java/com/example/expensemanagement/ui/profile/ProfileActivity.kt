@@ -36,7 +36,8 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun setupUI() {
         findViewById<android.view.View>(R.id.btnEditProfile).setOnClickListener {
-            Toast.makeText(this, "Tính năng chỉnh sửa đang phát triển", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, EditProfileActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<android.view.View>(R.id.btnManageCategories).setOnClickListener {
