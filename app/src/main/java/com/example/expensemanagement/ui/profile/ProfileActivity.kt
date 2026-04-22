@@ -11,78 +11,111 @@ import com.example.expensemanagement.ui.history.HistoryActivity
 import com.example.expensemanagement.ui.main.MainActivity
 import com.google.android.material.button.MaterialButton
 import android.view.View
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
+import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.ui.auth.LoginActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 1. Kết nối với file giao diện profile (Nền trắng, nút xanh)
         setContentView(R.layout.activity_profile)
 
-        // 2. Ánh xạ các thành phần giao diện
         val tvUsername = findViewById<TextView>(R.id.tvUsername)
+        val tvEmail = findViewById<TextView>(R.id.tvEmail)
+        val tvCurrency = findViewById<TextView>(R.id.tvCurrency)
         val btnEditProfile = findViewById<MaterialButton>(R.id.btnEditProfile)
+        val btnLogout = findViewById<View>(R.id.btnLogout)
 
-        // 3. Lấy tên người dùng từ SharedPreferences để hiển thị
+        // 1. Lấy userId hiện tại từ SharedPreferences
         val userPrefs = getSharedPreferences("UserPrefs", MODE_PRIVATE)
-        val username = userPrefs.getString("username", "Người dùng")
-        tvUsername.text = username
+        val userId = userPrefs.getLong("current_user_id", -1L)
+        val db = AppDatabase.getDatabase(this)
 
-        // 4. Xử lý sự kiện nút Chỉnh sửa hồ sơ
-        btnEditProfile.setOnClickListener {
-            Toast.makeText(this, "Tính năng chỉnh sửa đang được phát triển!", Toast.LENGTH_SHORT).show()
+        // 2. Hiển thị thông tin
+        lifecycleScope.launch {
+            db.userDao().getByIdFlow(userId).collect { user ->
+                if (user != null) {
+                    tvUsername.text = user.fullName
+                    tvEmail.text = user.email
+                    tvCurrency.text = user.currency
+
+                    btnEditProfile.setOnClickListener {
+                        val intent = Intent(this@ProfileActivity, EditProfileActivity::class.java)
+                        startActivity(intent)
+                    }
+                } else if (userId == -1L) {
+                    tvUsername.text = "Administrator"
+                    tvEmail.text = "admin@system.com"
+                    tvCurrency.text = "All"
+                    btnEditProfile.visibility = View.GONE
+                }
+            }
         }
 
-        val btnLogout = findViewById<android.view.View>(R.id.btnLogout)
-
+        // Xử lý Đăng xuất
         btnLogout.setOnClickListener {
-
-            val userPrefs = getSharedPreferences("UserPrefs", MODE_PRIVATE)
-
-            // Xóa dữ liệu user
-            userPrefs.edit().clear().apply()
+            val prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+            prefs.edit().clear().apply()
 
             Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show()
 
-            // Chuyển về Login
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
 
-        val btnNavOverview = findViewById<android.view.View>(R.id.btnNavOverview)
-        val btnNavExpense = findViewById<android.view.View>(R.id.btnNavExpense)
-        val btnNavStatistics = findViewById<android.view.View>(R.id.btnNavStatistics)
-        val btnNavProfile = findViewById<android.view.View>(R.id.btnNavProfile)
-        val fabAdd = findViewById<android.view.View>(R.id.fab_add)
+        setupBottomNavigation()
+    }
 
-        // TONG QUAN
+    private fun showUserInfoDialog(name: String, username: String, email: String, currency: String) {
+        val message = """
+            Họ tên: $name
+            Tên đăng nhập: $username
+            Email: $email
+            Đơn vị tiền tệ: $currency
+        """.trimIndent()
+
+        AlertDialog.Builder(this)
+            .setTitle("Thông tin cá nhân")
+            .setMessage(message)
+            .setPositiveButton("Đóng") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
+    }
+
+    private fun setupBottomNavigation() {
+        val btnNavOverview = findViewById<View>(R.id.btnNavOverview)
+        val btnNavExpense = findViewById<View>(R.id.btnNavExpense)
+        val btnNavStatistics = findViewById<View>(R.id.btnNavStatistics)
+        val btnNavProfile = findViewById<View>(R.id.btnNavProfile)
+        val fabAdd = findViewById<View>(R.id.fab_add)
+
         btnNavOverview?.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
             overridePendingTransition(0, 0)
         }
-        // CHI TIEU
         btnNavExpense?.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
             overridePendingTransition(0, 0)
         }
-        // THONG KE
         btnNavStatistics?.setOnClickListener {
             val intent = Intent(this, AnalyticsActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
             overridePendingTransition(0, 0)
         }
-        // PROFILE
         btnNavProfile?.setOnClickListener {
+            // Đang ở Profile rồi
         }
-        // FAB ADD
         fabAdd?.setOnClickListener {
             val intent = Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java)
             startActivity(intent)

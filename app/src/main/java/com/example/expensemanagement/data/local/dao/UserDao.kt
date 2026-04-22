@@ -17,6 +17,9 @@ interface UserDao {
     suspend fun getUserByEmail(email: String): UserEntity?
 
     @Query("SELECT * FROM users WHERE user_id = :id")
+    fun getByIdFlow(id: Long): kotlinx.coroutines.flow.Flow<UserEntity?>
+
+    @Query("SELECT * FROM users WHERE user_id = :id")
     suspend fun getById(id: Long): UserEntity?
 
     @Query("SELECT * FROM users")
