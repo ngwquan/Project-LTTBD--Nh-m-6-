@@ -1,11 +1,9 @@
 package com.example.expensemanagement.data.local.dao
+
+import androidx.room.*
 import com.example.expensemanagement.data.local.entity.TransactionEntity
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Update
-import androidx.room.OnConflictStrategy
+import com.example.expensemanagement.data.local.model.TransactionWithCategory
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TransactionDao {
@@ -13,11 +11,23 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(transaction: TransactionEntity)
 
+    // --- HÀM BỔ SUNG ĐỂ HIỂN THỊ TÊN DANH MỤC ĐỘNG ---
     @Query("""
-        SELECT * FROM transactions 
-        WHERE user_id = :userId 
-        ORDER BY transactionDate DESC
+        SELECT 
+            t.transaction_id AS id, 
+            t.amount AS amount, 
+            t.note AS note, 
+            t.transactionDate AS date, 
+            t.type AS type, 
+            c.name AS categoryName,
+            '#E0E0E0' AS categoryColor 
+        FROM transactions t 
+        INNER JOIN categories c ON t.category_id = c.category_id 
+        WHERE t.user_id = :userId 
+        ORDER BY t.transactionDate DESC
     """)
+    fun getAllTransactionsWithCategory(userId: Long): Flow<List<TransactionWithCategory>>
+    @Query("SELECT * FROM transactions WHERE user_id = :userId ORDER BY transactionDate DESC")
     suspend fun getByUser(userId: Long): List<TransactionEntity>
 
     @Query("SELECT * FROM transactions WHERE transaction_id = :id")

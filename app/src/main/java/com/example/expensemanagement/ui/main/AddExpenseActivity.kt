@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensemanagement.R
 import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.data.local.entity.TransactionEntity
-import com.example.expensemanagement.utils.MoneyUtils
+import com.example.expensemanagement.data.local.entity.CategoryEntity
+import com.example.expensemanagement.data.local.entity.WalletEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,12 +28,29 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var btnBack: ImageView
     private lateinit var rvCategories: RecyclerView
     private lateinit var categoryAdapter: CategoryAdapter
-    private var selectedCategory: com.example.expensemanagement.data.local.entity.CategoryEntity? = null
+    private var selectedCategory: CategoryEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
+        initViews()
+        setupRecyclerView()
+        initDefaultDataAndLoad()
+
+        btnBack.setOnClickListener { finish() }
+        tvTabExpense.setOnClickListener { switchType(true) }
+        tvTabIncome.setOnClickListener { switchType(false) }
+
+        switchType(true)
+        setupAmountFormatting()
+
+        btnSave.setOnClickListener {
+            handleSaveAction()
+        }
+    }
+
+    private fun initViews() {
         tvTabExpense = findViewById(R.id.tvTabExpense)
         tvTabIncome = findViewById(R.id.tvTabIncome)
         tvAmountLabel = findViewById(R.id.tvAmountLabel)
@@ -40,74 +59,125 @@ class AddExpenseActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.btnSaveExpense)
         btnBack = findViewById(R.id.btnBack)
         rvCategories = findViewById(R.id.rvCategories)
-
-        setupCategories()
-
-        btnBack.setOnClickListener { finish() }
-
-        tvTabExpense.setOnClickListener { switchType(true) }
-        tvTabIncome.setOnClickListener { switchType(false) }
-
-        switchType(true)
-
-        setupAmountFormatting()
-
-        btnSave.setOnClickListener {
-            val amountStr = edtAmount.text.toString()
-            if (amountStr.isEmpty() || amountStr == "0") {
-                Toast.makeText(this, "Vui lòng nhập số tiền", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Xử lý cả trường hợp người dùng nhập có dấu chấm/phẩy
-            val cleanAmount = amountStr.replace(".", "").replace(",", "")
-            val amount = cleanAmount.toDoubleOrNull() ?: 0.0
-            val note = edtNote.text.toString()
-            val type = if (isExpense) "EXPENSE" else "INCOME"
-
-            saveTransaction(amount, note, type)
-        }
     }
 
-    private fun switchType(expense: Boolean) {
-        isExpense = expense
-        if (isExpense) {
-            tvTabExpense.setBackgroundResource(R.drawable.bg_toggle_selected)
-            tvTabExpense.setTextColor(android.graphics.Color.WHITE)
-            tvTabIncome.setBackgroundResource(0)
-            tvTabIncome.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
-            tvAmountLabel.text = "Số tiền chi"
-            btnSave.text = "Lưu chi tiêu"
-        } else {
-            tvTabIncome.setBackgroundResource(R.drawable.bg_toggle_selected)
-            tvTabIncome.setTextColor(android.graphics.Color.WHITE)
-            tvTabExpense.setBackgroundResource(0)
-            tvTabExpense.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
-            tvAmountLabel.text = "Số tiền thu"
-            btnSave.text = "Lưu thu nhập"
-        }
-        loadCategoriesForType(if (isExpense) "EXPENSE" else "INCOME")
-    }
-
-    private fun setupCategories() {
+    private fun setupRecyclerView() {
+        rvCategories.layoutManager = GridLayoutManager(this, 3)
         categoryAdapter = CategoryAdapter(emptyList()) { category ->
             selectedCategory = category
         }
         rvCategories.adapter = categoryAdapter
     }
 
-    private fun loadCategoriesForType(type: String) {
+    private fun initDefaultDataAndLoad() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val userId = globalPref.getLong("current_user_id", -1)
+            if (userId == -1L) return@launch
+
+            val db = AppDatabase.getDatabase(this@AddExpenseActivity)
+            val categoryDao = db.categoryDao()
+
+            if (categoryDao.getByUser(userId).isEmpty()) {
+                // SỬA LỖI: Thêm tham số isSystem = true/false vào đây
+                val defaultList = listOf(
+                    CategoryEntity(userId = userId, name = "Ăn uống", type = "EXPENSE", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Di lại", type = "EXPENSE", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Mua sắm", type = "EXPENSE", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Y tế", type = "EXPENSE", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Giáo dục", type = "EXPENSE", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Tiền điện", type = "EXPENSE", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Mỹ phẩm", type = "EXPENSE", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Lương", type = "INCOME", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Tiền thưởng", type = "INCOME", isSystem = true)
+                )
+                defaultList.forEach { categoryDao.insert(it) }
+            }
+
+            withContext(Dispatchers.Main) {
+                loadCategoriesFromDb()
+            }
+        }
+    }
+
+    private fun switchType(expense: Boolean) {
+        isExpense = expense
+        selectedCategory = null
+        if (isExpense) {
+            tvTabExpense.setBackgroundResource(R.drawable.bg_toggle_selected)
+            tvTabExpense.setTextColor(android.graphics.Color.WHITE)
+            tvTabIncome.setBackgroundResource(0)
+            tvTabIncome.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
+            tvAmountLabel.text = "Số tiền chi"
+        } else {
+            tvTabIncome.setBackgroundResource(R.drawable.bg_toggle_selected)
+            tvTabIncome.setTextColor(android.graphics.Color.WHITE)
+            tvTabExpense.setBackgroundResource(0)
+            tvTabExpense.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
+            tvAmountLabel.text = "Số tiền thu"
+        }
+        loadCategoriesFromDb()
+    }
+
+    private fun loadCategoriesFromDb() {
+        val type = if (isExpense) "EXPENSE" else "INCOME"
         val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = globalPref.getLong("current_user_id", -1)
-        if (userId == -1L) return
 
         lifecycleScope.launch(Dispatchers.IO) {
             val db = AppDatabase.getDatabase(this@AddExpenseActivity)
-            val categories = db.categoryDao().getByUser(userId).filter { it.type == type }
-            
+            val list = db.categoryDao().getByUser(userId).filter { it.type == type }
             withContext(Dispatchers.Main) {
-                categoryAdapter.updateData(categories)
-                selectedCategory = null // Reset selection when switching type
+                categoryAdapter.updateData(list)
+            }
+        }
+    }
+
+    private fun handleSaveAction() {
+        val amountStr = edtAmount.text.toString().replace(".", "").replace(",", "")
+        val amount = amountStr.toDoubleOrNull() ?: 0.0
+
+        if (amount <= 0) {
+            Toast.makeText(this, "Vui lòng nhập số tiền hợp lệ", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (selectedCategory == null) {
+            Toast.makeText(this, "Vui lòng chọn một danh mục", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        saveToDatabase(amount)
+    }
+
+    private fun saveToDatabase(amount: Double) {
+        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = globalPref.getLong("current_user_id", -1)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = AppDatabase.getDatabase(this@AddExpenseActivity)
+            var wallet = db.walletDao().getByUser(userId).firstOrNull()
+
+            if (wallet == null) {
+                db.walletDao().insert(WalletEntity(userId = userId, name = "Ví chính", type = "CASH", balance = 0.0, isDefault = true))
+                wallet = db.walletDao().getByUser(userId).first()
+            }
+
+            // SỬA LỖI: Gán đúng tên tham số để tránh nhầm lẫn kiểu dữ liệu (Argument type mismatch)
+            val transaction = TransactionEntity(
+                userId = userId,
+                walletId = wallet.id,
+                categoryId = selectedCategory!!.id,
+                amount = amount,
+                type = if (isExpense) "EXPENSE" else "INCOME",
+                note = edtNote.text.toString(),
+                transactionDate = System.currentTimeMillis()
+            )
+            db.transactionDao().insert(transaction)
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@AddExpenseActivity, "Đã lưu thành công!", Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
     }
@@ -120,95 +190,16 @@ class AddExpenseActivity : AppCompatActivity() {
             override fun afterTextChanged(s: android.text.Editable?) {
                 if (s.toString() != current) {
                     edtAmount.removeTextChangedListener(this)
-
                     val cleanString = s.toString().replace("[^0-9]".toRegex(), "")
                     if (cleanString.isNotEmpty()) {
-                        val formatted = try {
-                            val parsed = cleanString.toLong()
-                            java.text.NumberFormat.getInstance(java.util.Locale("vi", "VN")).format(parsed)
-                        } catch (e: Exception) {
-                            ""
-                        }
+                        val formatted = java.text.NumberFormat.getInstance(java.util.Locale("vi", "VN")).format(cleanString.toLong())
                         current = formatted
                         edtAmount.setText(formatted)
                         edtAmount.setSelection(formatted.length)
-                    } else {
-                        current = ""
-                        edtAmount.setText("")
                     }
-
                     edtAmount.addTextChangedListener(this)
                 }
             }
         })
-    }
-
-    private fun saveTransaction(amount: Double, note: String, type: String) {
-        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userId = globalPref.getLong("current_user_id", -1)
-        if (userId == -1L) return
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getDatabase(this@AddExpenseActivity)
-            
-            // 0. Đảm bảo có Wallet và Category mặc định để tránh lỗi khóa ngoại
-            val walletDao = db.walletDao()
-            val categoryDao = db.categoryDao()
-            
-            var defaultWallet = walletDao.getByUser(userId).firstOrNull()
-            if (defaultWallet == null) {
-                walletDao.insert(com.example.expensemanagement.data.local.entity.WalletEntity(
-                    userId = userId,
-                    name = "Ví chính",
-                    type = "CASH",
-                    balance = 0.0,
-                    isDefault = true
-                ))
-                defaultWallet = walletDao.getByUser(userId).first()
-            }
-
-            var defaultCategory = selectedCategory ?: categoryDao.getByUser(userId).firstOrNull { it.type == type }
-            if (defaultCategory == null) {
-                categoryDao.insert(com.example.expensemanagement.data.local.entity.CategoryEntity(
-                    userId = userId,
-                    name = if (type == "EXPENSE") "Chi tiêu khác" else "Thu nhập khác",
-                    type = type,
-                    isSystem = true
-                ))
-                defaultCategory = categoryDao.getByUser(userId).first { it.type == type }
-            }
-
-            // 1. Lưu vào Database
-            val transaction = TransactionEntity(
-                userId = userId,
-                walletId = defaultWallet.id, 
-                categoryId = defaultCategory.id, 
-                amount = amount,
-                type = type,
-                note = note,
-                transactionDate = System.currentTimeMillis()
-            )
-            db.transactionDao().insert(transaction)
-
-            // 2. Cập nhật số dư trong SharedPreferences
-            val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
-            val currentMoneyStr = userPrefs.getString("money", "0")?.replace("[^0-9]".toRegex(), "") ?: "0"
-            val currentMoney = currentMoneyStr.toLongOrNull() ?: 0
-            
-            val newMoney = if (type == "EXPENSE") {
-                currentMoney - amount.toLong()
-            } else {
-                currentMoney + amount.toLong()
-            }
-
-            userPrefs.edit()
-                .putString("money", newMoney.toString())
-                .commit() 
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(this@AddExpenseActivity, "Lưu thành công!", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        }
     }
 }

@@ -4,23 +4,25 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="12dp"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <View
         android:id="@+id/viewCategoryIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/bg_category_circle" />
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_circle_category" />
 
     <TextView
         android:id="@+id/tvCategoryName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="Danh mục"
+        android:layout_marginTop="8dp"
+        android:text="Tên mục"
         android:textColor="#333333"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:gravity="center" />
 
 </LinearLayout>
