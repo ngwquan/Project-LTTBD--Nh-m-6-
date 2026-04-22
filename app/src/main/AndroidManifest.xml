@@ -65,6 +65,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.profile.EditProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.analytics.AnalyticsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
