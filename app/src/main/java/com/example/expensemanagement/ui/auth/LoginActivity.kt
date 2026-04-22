@@ -60,6 +60,10 @@ class LoginActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
                     if (user != null && user.passwordHash == password) {
+                        // Lưu thông tin username trước khi chuyển màn hình
+                        val sharedPref = getSharedPreferences("UserPrefs_${user.id}", Context.MODE_PRIVATE)
+                        sharedPref.edit().putString("username", user.fullName).apply()
+
                         proceedToSetup(user.id)
                     } else {
                         Toast.makeText(this@LoginActivity, "Email hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show()

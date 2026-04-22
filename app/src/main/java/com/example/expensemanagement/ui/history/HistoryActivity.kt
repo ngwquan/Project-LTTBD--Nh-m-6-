@@ -151,7 +151,11 @@ class HistoryActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnNavCategories)?.setOnClickListener {
             startActivity(Intent(this, AddExpenseActivity::class.java))
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        loadData()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
