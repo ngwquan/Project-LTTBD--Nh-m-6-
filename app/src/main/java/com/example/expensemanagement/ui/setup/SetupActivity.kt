@@ -20,8 +20,11 @@ class SetupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_setup)
 
         val txtWelcome = findViewById<TextView>(R.id.txtWelcome)
-        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("username", "")
+        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = globalPref.getLong("current_user_id", -1)
+        val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
+        
+        val username = userPrefs.getString("username", "User")
         val spinner = findViewById<Spinner>(R.id.spinnerCurrency)
         val edtMoney = findViewById<EditText>(R.id.edtMoney)
         val btnSave = findViewById<Button>(R.id.btnSave)
@@ -40,13 +43,11 @@ class SetupActivity : AppCompatActivity() {
                 if (s.toString() != current) {
                     edtMoney.removeTextChangedListener(this)
 
-                    // Loại bỏ tất cả các dấu chấm trước khi xử lý
                     val cleanString = s.toString().replace(".", "")
 
                     if (cleanString.isNotEmpty()) {
                         try {
                             val parsed = cleanString.toDouble()
-                            // Định dạng số với dấu chấm phân cách hàng nghìn
                             val formatter = NumberFormat.getInstance(Locale("vi", "VN")) as DecimalFormat
                             formatter.applyPattern("#,###")
                             val formatted = formatter.format(parsed).replace(",", ".")
@@ -66,7 +67,6 @@ class SetupActivity : AppCompatActivity() {
             }
         })
 
-        // spinner chọn đơn vị tiền
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.currency_list,
@@ -76,25 +76,28 @@ class SetupActivity : AppCompatActivity() {
         spinner.adapter = adapter
         spinner.setSelection (0)
 
-        // button bắt đầu sử dụng
         btnSave.setOnClickListener {
-
-            val money = edtMoney.text.toString()
-
-            if (money.isEmpty()) {
+            val moneyFormatted = edtMoney.text.toString()
+            if (moneyFormatted.isEmpty()) {
                 edtMoney.error = "Vui lòng nhập số tiền"
                 return@setOnClickListener
             }
 
+            val rawMoney = moneyFormatted.replace(".", "")
             val currency = spinner.selectedItem.toString()
 
-            Toast.makeText(this, "Đã lưu: $money - $currency", Toast.LENGTH_SHORT).show()
+            // Lưu dữ liệu vào SharedPreferences của User hiện tại
+            userPrefs.edit()
+                .putString("money", rawMoney)
+                .putString("currency", currency)
+                .putBoolean("isSetupDone", true) // Đánh dấu đã setup xong
+                .commit() // Dùng commit để ghi ngay lập tức
+
+            Toast.makeText(this, "Thiết lập thành công!", Toast.LENGTH_SHORT).show()
 
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("MONEY", currency)
-            intent.putExtra("CURRENCY", currency)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
-
             finish()
         }
     }

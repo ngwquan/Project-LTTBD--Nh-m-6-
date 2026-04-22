@@ -146,9 +146,8 @@ class AnalyticsActivity : AppCompatActivity() {
 
     private fun setupNavigation() {
         val btnNavOverview = findViewById<View>(R.id.btnNavOverview)
-        val btnNavExpense = findViewById<View>(R.id.btnNavExpense)
         val btnNavProfile = findViewById<View>(R.id.btnNavProfile)
-        val fabAdd = findViewById<View>(R.id.fab_add)
+        val btnNavCategories = findViewById<View>(R.id.btnNavCategories)
 
         btnNavOverview?.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java).apply {
@@ -156,20 +155,20 @@ class AnalyticsActivity : AppCompatActivity() {
             })
             overridePendingTransition(0, 0)
         }
-        btnNavExpense?.setOnClickListener {
+        findViewById<View>(R.id.btnNavHistory)?.setOnClickListener {
             startActivity(Intent(this, HistoryActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             })
             overridePendingTransition(0, 0)
+        }
+        btnNavCategories?.setOnClickListener {
+            startActivity(Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java))
         }
         btnNavProfile?.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             })
             overridePendingTransition(0, 0)
-        }
-        fabAdd?.setOnClickListener {
-            startActivity(Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java))
         }
     }
 }

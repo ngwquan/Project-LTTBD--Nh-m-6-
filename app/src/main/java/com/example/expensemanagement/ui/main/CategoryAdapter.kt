@@ -18,12 +18,13 @@ class CategoryAdapter(
     private var selectedPosition = -1
 
     class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvName: TextView = view.findViewById(android.R.id.text1)
+        val tvName: TextView = view.findViewById(R.id.tvCategoryName)
+        val iconView: View = view.findViewById(R.id.viewCategoryIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
+            .inflate(R.layout.item_category, parent, false)
         return CategoryViewHolder(view)
     }
 
@@ -32,9 +33,11 @@ class CategoryAdapter(
         holder.tvName.text = category.name
         
         if (position == selectedPosition) {
-            holder.itemView.setBackgroundColor(Color.LTGRAY)
+            holder.iconView.background.setTint(Color.parseColor("#4DB6E2"))
+            holder.tvName.setTextColor(Color.parseColor("#4DB6E2"))
         } else {
-            holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+            holder.iconView.background.setTint(Color.parseColor("#E0E0E0"))
+            holder.tvName.setTextColor(Color.parseColor("#333333"))
         }
 
         holder.itemView.setOnClickListener {

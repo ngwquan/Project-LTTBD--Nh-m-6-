@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA"
+    android:background="#EAF6FB"
     tools:ignore="HardcodedText,ContentDescription">
 
     <androidx.core.widget.NestedScrollView
@@ -52,11 +52,14 @@
                             android:text="Ví của tôi"
                             android:textColor="#757575" />
                         <TextView
+                            android:id="@+id/tvViewAll"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:text="Xem tất cả"
-                            android:textColor="#2196F3" />
+                            android:textColor="#4DB6E2"
+                            android:clickable="true"
+                            android:focusable="true" />
                     </RelativeLayout>
                     <View android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -71,6 +74,7 @@
                             android:textColor="#212121"
                             android:textSize="16sp" />
                         <TextView
+                            android:id="@+id/txtMoney"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
@@ -159,7 +163,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="0.00"
-                                android:textColor="#2196F3"
+                                android:textColor="#4DB6E2"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
                             <View
@@ -206,20 +210,7 @@
             android:weightSum="5">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_today" app:tint="#2196F3" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tổng quan" android:textColor="#2196F3" android:textSize="10sp" android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/btnNavExpense"
+                android:id="@+id/btnNavOverview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -231,17 +222,62 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:src="@android:drawable/ic_menu_agenda"
+                    android:src="@android:drawable/ic_menu_today"
+                    app:tint="#4DB6E2" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tổng quan"
+                    android:textColor="#4DB6E2"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnNavHistory"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
                     app:tint="#757575" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Chi tiêu"
+                    android:text="Lịch sử"
                     android:textColor="#757575"
                     android:textSize="10sp" />
             </LinearLayout>
 
-            <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+            <LinearLayout
+                android:id="@+id/btnNavCategories"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    app:tint="#757575" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thêm mới"
+                    android:textColor="#757575"
+                    android:textSize="8sp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/btnNavStatistics"
@@ -253,8 +289,17 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_manage" app:tint="#757575" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thống kê" android:textColor="#757575" android:textSize="10sp" />
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@android:drawable/ic_menu_report_image"
+                    app:tint="#757575" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thống kê"
+                    android:textColor="#757575"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -267,24 +312,20 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless">
-                <ImageView android:layout_width="22dp" android:layout_height="22dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#757575" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textColor="#757575" android:textSize="10sp" />
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@android:drawable/ic_menu_myplaces"
+                    app:tint="#757575" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:textColor="#757575"
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:backgroundTint="#2196F3"
-        android:src="@android:drawable/ic_input_add"
-        app:elevation="12dp"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tint="#FFFFFF" />
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

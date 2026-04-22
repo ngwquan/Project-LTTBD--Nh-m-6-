@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,20 +26,48 @@ class HistoryActivity : AppCompatActivity() {
     private lateinit var adapter: TransactionAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvEmpty: View
+    private lateinit var tvTabExpense: TextView
+    private lateinit var tvTabIncome: TextView
+    private var isExpenseTab = true
     private var fullTransactionList: List<TransactionEntity> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
 
+        tvTabExpense = findViewById(R.id.tvTabExpenseHistory)
+        tvTabIncome = findViewById(R.id.tvTabIncomeHistory)
+        recyclerView = findViewById(R.id.rvTransactions)
+        tvEmpty = findViewById(R.id.tvEmptyData)
+
+        tvTabExpense.setOnClickListener { switchTab(true) }
+        tvTabIncome.setOnClickListener { switchTab(false) }
+
         setupRecyclerView()
         setupNavigation()
         setupSearch()
+        
+        switchTab(true) // Mặc định hiện Tiền chi
+    }
+
+    private fun switchTab(isExpense: Boolean) {
+        isExpenseTab = isExpense
+        if (isExpenseTab) {
+            tvTabExpense.setBackgroundResource(R.drawable.bg_toggle_selected)
+            tvTabExpense.setTextColor(android.graphics.Color.WHITE)
+            tvTabIncome.setBackgroundResource(0)
+            tvTabIncome.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
+        } else {
+            tvTabIncome.setBackgroundResource(R.drawable.bg_toggle_selected)
+            tvTabIncome.setTextColor(android.graphics.Color.WHITE)
+            tvTabExpense.setBackgroundResource(0)
+            tvTabExpense.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
+        }
         loadData()
     }
 
     private fun setupSearch() {
-        val edtSearch = findViewById<android.widget.EditText>(R.id.edtSearch)
+        val edtSearch = findViewById<EditText>(R.id.edtSearch)
         edtSearch.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -47,20 +75,14 @@ class HistoryActivity : AppCompatActivity() {
             }
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
-
-        val chipGroup = findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupFilter)
-        chipGroup.setOnCheckedChangeListener { _, _ ->
-            applyFilters()
-        }
     }
 
     private fun applyFilters() {
-        val query = findViewById<android.widget.EditText>(R.id.edtSearch).text.toString()
-        val checkedChipId = findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipGroupFilter).checkedChipId
+        val query = findViewById<EditText>(R.id.edtSearch).text.toString()
+        val typeFilter = if (isExpenseTab) "EXPENSE" else "INCOME"
 
-        var filtered = fullTransactionList
+        var filtered = fullTransactionList.filter { it.type == typeFilter }
 
-        // Lọc theo text
         if (query.isNotEmpty()) {
             filtered = filtered.filter { 
                 it.note?.contains(query, ignoreCase = true) == true ||
@@ -68,20 +90,10 @@ class HistoryActivity : AppCompatActivity() {
             }
         }
 
-        // Lọc theo loại (Chip)
-        filtered = when (checkedChipId) {
-            R.id.chipExpense -> filtered.filter { it.type == "EXPENSE" }
-            R.id.chipIncome -> filtered.filter { it.type == "INCOME" }
-            else -> filtered
-        }
-
         updateUI(filtered)
     }
 
     private fun setupRecyclerView() {
-        recyclerView = findViewById(R.id.rvTransactions)
-        tvEmpty = findViewById(R.id.tvEmptyData)
-        
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = TransactionAdapter(emptyList()) { transaction ->
             val intent = Intent(this, AddExpenseActivity::class.java)
@@ -102,7 +114,7 @@ class HistoryActivity : AppCompatActivity() {
             fullTransactionList = db.transactionDao().getByUser(userId)
             
             withContext(Dispatchers.Main) {
-                updateUI(fullTransactionList)
+                applyFilters()
             }
         }
     }
@@ -119,42 +131,31 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        val btnNavOverview = findViewById<android.view.View>(R.id.btnNavOverview)
-        val btnNavExpense = findViewById<android.view.View>(R.id.btnNavExpense)
-        val btnNavStatistics = findViewById<android.view.View>(R.id.btnNavStatistics)
-        val btnNavProfile = findViewById<android.view.View>(R.id.btnNavProfile)
-        val fabAdd = findViewById<android.view.View>(R.id.fab_add)
-
-        btnNavOverview?.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            })
-            overridePendingTransition(0, 0)
+        findViewById<View>(R.id.btnNavOverview)?.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
         
-        btnNavStatistics?.setOnClickListener {
-            startActivity(Intent(this, AnalyticsActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            })
-            overridePendingTransition(0, 0)
+        findViewById<View>(R.id.btnNavStatistics)?.setOnClickListener {
+            startActivity(Intent(this, AnalyticsActivity::class.java))
+            finish()
         }
         
-        btnNavProfile?.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            })
+        findViewById<View>(R.id.btnNavProfile)?.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
             overridePendingTransition(0, 0)
         }
 
-        fabAdd?.setOnClickListener {
-            startActivityForResult(Intent(this, AddExpenseActivity::class.java), 100)
+        findViewById<View>(R.id.btnNavCategories)?.setOnClickListener {
+            startActivity(Intent(this, AddExpenseActivity::class.java))
         }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            loadData()
-        }
+        loadData()
     }
 }

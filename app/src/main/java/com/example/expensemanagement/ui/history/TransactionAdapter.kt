@@ -1,5 +1,6 @@
 package com.example.expensemanagement.ui.history
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +31,15 @@ class TransactionAdapter(
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactions[position]
         holder.tvNote.text = transaction.note ?: "Không có ghi chú"
-        holder.tvAmount.text = String.format("%,.0f đ", transaction.amount)
+        
+        val formattedAmount = String.format("%,.0f đ", transaction.amount)
+        if (transaction.type == "EXPENSE") {
+            holder.tvAmount.text = "- $formattedAmount"
+            holder.tvAmount.setTextColor(Color.parseColor("#F44336")) // Màu đỏ
+        } else {
+            holder.tvAmount.text = "+ $formattedAmount"
+            holder.tvAmount.setTextColor(Color.parseColor("#4CAF50")) // Màu xanh
+        }
         
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         holder.tvDate.text = sdf.format(Date(transaction.transactionDate))

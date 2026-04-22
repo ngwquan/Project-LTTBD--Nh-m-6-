@@ -1,121 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="#EAF6FB">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/imgHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="240dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/headersetup"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <RelativeLayout
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="-40dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgHeader">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <ImageView
-                android:id="@+id/imgHeader"
+            <TextView
+                android:id="@+id/txtWelcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xin chào,"
+                android:textColor="#333333"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Thiết lập ví tiền của bạn"
+                android:textColor="#757575"
+                android:textSize="14sp" />
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/headersetup"/>
+                android:layout_height="1dp"
+                android:layout_marginVertical="24dp"
+                android:background="#F0F0F0" />
 
-            <LinearLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đơn vị tiền tệ"
+                android:textColor="#333333"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/imgHeader"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:layout_marginTop="-30dp"
-                android:background="@drawable/bg_card"
-                android:minHeight="600dp">
-
-                <TextView
-                    android:id="@+id/txtWelcome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Xin chào"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="#222" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Thiết lập ban đầu"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#222"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hãy cho chúng tôi biết một chút về kế hoạch của bạn."
-                    android:textColor="#888"
-                    android:textSize="14sp"
-                    android:layout_marginBottom="32dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hãy chọn đơn vị tiền tệ"
-                    android:textStyle="bold"
-                    android:textColor="#555"
-                    android:layout_marginBottom="8dp"/>
-
-                <FrameLayout
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="12dp">
+                <Spinner
+                    android:id="@+id/spinnerCurrency"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:background="@drawable/bg_input"
-                    android:layout_marginBottom="20dp">
-                    <Spinner
-                        android:id="@+id/spinnerCurrency"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp" />
-                </FrameLayout>
+                    android:layout_height="match_parent" />
+            </FrameLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Số tiền mà bạn muốn quản lý chi tiêu."
-                    android:textStyle="bold"
-                    android:textColor="#555"
-                    android:layout_marginBottom="8dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Số tiền mặt hiện có"
+                android:textColor="#333333"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/edtMoney"
-                    android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:hint="Ví dụ: 1.000.000 VNĐ"
-                    android:inputType="numberDecimal"
-                    android:background="@drawable/bg_input"
-                    android:padding="14dp"
-                    android:textColor="#222"
-                    android:layout_marginBottom="40dp"/>
+            <EditText
+                android:id="@+id/edtMoney"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:hint="Ví dụ: 1.000.000"
+                android:inputType="number"
+                android:paddingHorizontal="16dp"
+                android:textColor="#212121"
+                android:textSize="16sp" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-                <Button
-                    android:id="@+id/btnSave"
-                    android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:background="@drawable/bg_button"
-                    android:text="Bắt đầu sử dụng"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="60dp"/>
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="#4DB6E2"
+                android:text="BẮT ĐẦU SỬ DỤNG"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="28dp" />
 
-            </LinearLayout>
-        </RelativeLayout>
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
