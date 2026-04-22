@@ -55,15 +55,7 @@ class LoginActivity : AppCompatActivity() {
 
             // Sử dụng Coroutine để kiểm tra Database
             lifecycleScope.launch(Dispatchers.IO) {
-                // 1. Kiểm tra tài khoản admin mặc định
-                if (email == "admin" && password == "admin") {
-                    withContext(Dispatchers.Main) {
-                        proceedToSetup(-1) // ID -1 đại diện cho Admin
-                    }
-                    return@launch
-                }
-
-                // 2. Kiểm tra trong Database
+                // Kiểm tra trong Database
                 val user = userDao.getUserByEmail(email)
 
                 withContext(Dispatchers.Main) {
