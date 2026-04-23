@@ -31,7 +31,7 @@ class SetupActivity : AppCompatActivity() {
         val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = globalPref.getLong("current_user_id", -1)
         val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
-        
+
         val username = userPrefs.getString("username", "User")
         val spinner = findViewById<Spinner>(R.id.spinnerCurrency)
         val edtMoney = findViewById<EditText>(R.id.edtMoney)
@@ -92,6 +92,16 @@ class SetupActivity : AppCompatActivity() {
             }
 
             val rawMoney = moneyFormatted.replace(".", "")
+            val amount = rawMoney.toLong()
+            val currency = spinner.selectedItem.toString()
+
+            // Lưu dữ liệu vào SharedPreferences của User hiện tại
+            userPrefs.edit()
+                .putString("money", rawMoney)
+                .putLong("initial_balance", amount)
+                .putString("currency", currency)
+                .putBoolean("isSetupDone", true) // Đánh dấu đã setup xong
+                .commit() // Dùng commit để ghi ngay lập tức
             val amount = rawMoney.toDoubleOrNull() ?: 0.0
             val currency = spinner.selectedItem.toString()
 

@@ -80,6 +80,8 @@ class MainActivity : AppCompatActivity() {
         val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
         val usernamePref = userPrefs.getString("username", "User")
         val currency = userPrefs.getString("currency", "₫") ?: "₫"
+
+        val amount_show = userPrefs.getLong("initial_balance", 0L)
         
         txtWelcome.text = "Xin chào, $usernamePref"
 
@@ -115,11 +117,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             
-            val balance = totalAllInc - totalAllExp
+            val balance = amount_show + (totalAllInc - totalAllExp).toLong()
 
             withContext(Dispatchers.Main) {
                 txtWelcome.text = "Xin chào, $displayName"
-                txtMoney.text = MoneyUtils.format(balance.toLong().toString(), currency)
+                txtMoney.text = MoneyUtils.format(balance.toString(), currency)
                 tvTotalExpense.text = MoneyUtils.format(monthExp.toLong().toString(), currency)
                 tvTotalIncome.text = MoneyUtils.format(monthInc.toLong().toString(), currency)
                 
