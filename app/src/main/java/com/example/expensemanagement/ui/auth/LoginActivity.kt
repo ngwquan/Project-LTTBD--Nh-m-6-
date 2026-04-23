@@ -24,6 +24,14 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isLoggedIn = globalPref.getBoolean("is_logged_in", false)
+        val userId = globalPref.getLong("current_user_id", -1)
+
+        if (isLoggedIn && userId != -1L) {
+            proceedToSetup(userId)
+            return
+        }
         val edtEmail = findViewById<EditText>(R.id.edtEmail)
         val edtPassword = findViewById<EditText>(R.id.edtPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
@@ -31,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
         val imgToggle = findViewById<ImageView>(R.id.imgToggle)
         val db = AppDatabase.getDatabase(this)
         val userDao = db.userDao()
+        val rememberCheckBox = findViewById<CheckBox>(R.id.rememberLogin)
 
         fun hashPassword(password: String): String {
             val bytes = password.toByteArray()
@@ -71,12 +80,25 @@ class LoginActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (user != null && user.passwordHash == hashedInput) {
                         // Lưu thông tin username trước khi chuyển màn hình
-                        val sharedPref = getSharedPreferences("UserPrefs_${user.id}", Context.MODE_PRIVATE)
-                        sharedPref.edit().putString("username", user.fullName).apply()
+                        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                        globalPref.edit().apply {
+                            putLong("current_user_id", user.id)
+                            putBoolean("is_logged_in", rememberCheckBox.isChecked)
+                            apply()
+                        }
+
+                        val userPref = getSharedPreferences("UserPrefs_${user.id}", Context.MODE_PRIVATE)
+                        userPref.edit()
+                            .putString("username", user.fullName)
+                            .apply()
 
                         proceedToSetup(user.id)
                     } else {
-                        Toast.makeText(this@LoginActivity, "Email hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Email hoặc mật khẩu không chính xác",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
