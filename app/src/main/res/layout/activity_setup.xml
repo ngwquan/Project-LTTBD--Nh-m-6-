@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Số tiền mặt hiện có"
+                android:text="Ngân sách bạn muốn quản lý mỗi tháng"
                 android:textColor="#333333"
                 android:textSize="15sp"
                 android:textStyle="bold" />
