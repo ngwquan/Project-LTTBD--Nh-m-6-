@@ -83,9 +83,9 @@ class EditProfileActivity : AppCompatActivity() {
     private fun saveProfile() {
         val fullName = etFullName.text.toString().trim()
         val email = etEmail.text.toString().trim()
-        val oldPassword = etOldPassword.text.toString()
-        val newPassword = etNewPassword.text.toString()
-        val confirmPassword = etConfirmPassword.text.toString()
+        val oldPassword = etOldPassword.text.toString().trim()
+        val newPassword = etNewPassword.text.toString().trim()
+        val confirmPassword = etConfirmPassword.text.toString().trim()
 
         if (fullName.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Vui lòng điền đầy đủ họ tên và email", Toast.LENGTH_SHORT).show()
@@ -97,7 +97,7 @@ class EditProfileActivity : AppCompatActivity() {
         // Password change logic
         var updatedPasswordHash = user.passwordHash
         if (newPassword.isNotEmpty()) {
-            if (oldPassword != user.passwordHash) { // Simplified password check
+            if (oldPassword != user.passwordHash) {
                 Toast.makeText(this, "Mật khẩu cũ không chính xác", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -113,6 +113,7 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         val updatedUser = user.copy(
+            id = user.id, // Đảm bảo ghi đè đúng ID hiện tại
             fullName = fullName,
             email = email,
             passwordHash = updatedPasswordHash
@@ -120,9 +121,9 @@ class EditProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             val db = AppDatabase.getDatabase(this@EditProfileActivity)
-            db.userDao().insert(updatedUser)
+            db.userDao().update(updatedUser) // Sử dụng update thay vì insert/replace để tránh lỗi Foreign Key
 
-            // Sync with SharedPreferences (similar to ProfileActivity)
+            // Đồng bộ lại UI trong SharedPreferences
             val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
             userPrefs.edit()
                 .putString("username", fullName)
