@@ -13,6 +13,8 @@ import com.example.expensemanagement.data.local.database.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -29,6 +31,13 @@ class LoginActivity : AppCompatActivity() {
         val imgToggle = findViewById<ImageView>(R.id.imgToggle)
         val db = AppDatabase.getDatabase(this)
         val userDao = db.userDao()
+
+        fun hashPassword(password: String): String {
+            val bytes = password.toByteArray()
+            val md = MessageDigest.getInstance("SHA-256")
+            val digest = md.digest(bytes)
+            return digest.joinToString("") { "%02x".format(it) }
+        }
 
         // xử lý hiện/ẩn mật khẩu
         imgToggle.setOnClickListener {
@@ -57,9 +66,10 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch(Dispatchers.IO) {
                 // Kiểm tra trong Database
                 val user = userDao.getUserByEmail(email)
+                val hashedInput = hashPassword(password)
 
                 withContext(Dispatchers.Main) {
-                    if (user != null && user.passwordHash == password) {
+                    if (user != null && user.passwordHash == hashedInput) {
                         // Lưu thông tin username trước khi chuyển màn hình
                         val sharedPref = getSharedPreferences("UserPrefs_${user.id}", Context.MODE_PRIVATE)
                         sharedPref.edit().putString("username", user.fullName).apply()
