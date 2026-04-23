@@ -79,17 +79,17 @@ class AddExpenseActivity : AppCompatActivity() {
             val categoryDao = db.categoryDao()
 
             if (categoryDao.getByUser(userId).isEmpty()) {
-                // SỬA LỖI: Thêm tham số isSystem = true/false vào đây
                 val defaultList = listOf(
-                    CategoryEntity(userId = userId, name = "Ăn uống", type = "EXPENSE", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Di lại", type = "EXPENSE", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Mua sắm", type = "EXPENSE", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Y tế", type = "EXPENSE", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Giáo dục", type = "EXPENSE", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Tiền điện", type = "EXPENSE", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Mỹ phẩm", type = "EXPENSE", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Lương", type = "INCOME", isSystem = true),
-                    CategoryEntity(userId = userId, name = "Tiền thưởng", type = "INCOME", isSystem = true)
+                    CategoryEntity(userId = userId, name = "Ăn uống", type = "EXPENSE", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Đi lại", type = "EXPENSE", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Mua sắm", type = "EXPENSE", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Y tế", type = "EXPENSE", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Giáo dục", type = "EXPENSE", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Tiền điện", type = "EXPENSE", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Chi tiêu khác", type = "EXPENSE", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Lương", type = "INCOME", isSystem = false),
+                    CategoryEntity(userId = userId, name = "Số dư đầu", type = "INCOME", isSystem = true),
+                    CategoryEntity(userId = userId, name = "Thu nhập khác", type = "INCOME", isSystem = false)
                 )
                 defaultList.forEach { categoryDao.insert(it) }
             }

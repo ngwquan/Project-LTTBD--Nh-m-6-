@@ -7,8 +7,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.expensemanagement.R
+import com.example.expensemanagement.data.local.database.AppDatabase
+import com.example.expensemanagement.data.local.entity.CategoryEntity
+import com.example.expensemanagement.data.local.entity.TransactionEntity
+import com.example.expensemanagement.data.local.entity.WalletEntity
 import com.example.expensemanagement.ui.main.MainActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
@@ -74,7 +82,7 @@ class SetupActivity : AppCompatActivity() {
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
-        spinner.setSelection (0)
+        spinner.setSelection(0)
 
         btnSave.setOnClickListener {
             val moneyFormatted = edtMoney.text.toString()
@@ -94,13 +102,82 @@ class SetupActivity : AppCompatActivity() {
                 .putString("currency", currency)
                 .putBoolean("isSetupDone", true) // Đánh dấu đã setup xong
                 .commit() // Dùng commit để ghi ngay lập tức
+            val amount = rawMoney.toDoubleOrNull() ?: 0.0
+            val currency = spinner.selectedItem.toString()
 
-            Toast.makeText(this, "Thiết lập thành công!", Toast.LENGTH_SHORT).show()
+            lifecycleScope.launch(Dispatchers.IO) {
+                val db = AppDatabase.getDatabase(this@SetupActivity)
+                
+                // 1. Tạo ví mặc định nếu chưa có
+                var defaultWallet = db.walletDao().getByUser(userId).firstOrNull()
+                if (defaultWallet == null) {
+                    db.walletDao().insert(WalletEntity(
+                        userId = userId,
+                        name = "Ví chính",
+                        type = "CASH",
+                        balance = 0.0,
+                        isDefault = true
+                    ))
+                    defaultWallet = db.walletDao().getByUser(userId).first()
+                }
 
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            finish()
+                // 2. Tạo danh mục mặc định
+                initDefaultCategories(db, userId)
+
+                // 3. Tạo giao dịch thu nhập ban đầu nếu số tiền > 0
+                if (amount > 0) {
+                    val initialCat = db.categoryDao().getByUser(userId).firstOrNull { it.name == "Số dư đầu" }
+                    if (initialCat != null) {
+                        db.transactionDao().insert(TransactionEntity(
+                            userId = userId,
+                            walletId = defaultWallet.id,
+                            categoryId = initialCat.id,
+                            amount = amount,
+                            type = "INCOME",
+                            note = "Số dư thiết lập ban đầu",
+                            transactionDate = System.currentTimeMillis()
+                        ))
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    userPrefs.edit()
+                        .putString("money", rawMoney)
+                        .putString("currency", currency)
+                        .putBoolean("isSetupDone", true)
+                        .apply()
+
+                    Toast.makeText(this@SetupActivity, "Thiết lập thành công!", Toast.LENGTH_SHORT).show()
+
+                    val intent = Intent(this@SetupActivity, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                }
+            }
         }
+    }
+
+    private suspend fun initDefaultCategories(db: AppDatabase, userId: Long) {
+        val categoryDao = db.categoryDao()
+        val existing = categoryDao.getByUser(userId)
+        if (existing.isNotEmpty()) return
+
+        val defaults = listOf(
+            // Chi tiêu
+            CategoryEntity(userId = userId, name = "Ăn uống", type = "EXPENSE", isSystem = false),
+            CategoryEntity(userId = userId, name = "Đi lại", type = "EXPENSE", isSystem = false),
+            CategoryEntity(userId = userId, name = "Mua sắm", type = "EXPENSE", isSystem = false),
+            CategoryEntity(userId = userId, name = "Y tế", type = "EXPENSE", isSystem = false),
+            CategoryEntity(userId = userId, name = "Giáo dục", type = "EXPENSE", isSystem = false),
+            CategoryEntity(userId = userId, name = "Tiền điện", type = "EXPENSE", isSystem = false),
+            CategoryEntity(userId = userId, name = "Chi tiêu khác", type = "EXPENSE", isSystem = false),
+            // Thu nhập
+            CategoryEntity(userId = userId, name = "Lương", type = "INCOME", isSystem = false),
+            CategoryEntity(userId = userId, name = "Số dư đầu", type = "INCOME", isSystem = true),
+            CategoryEntity(userId = userId, name = "Thu nhập khác", type = "INCOME", isSystem = false)
+        )
+
+        defaults.forEach { categoryDao.insert(it) }
     }
 }

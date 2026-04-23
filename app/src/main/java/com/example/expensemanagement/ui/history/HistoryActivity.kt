@@ -19,7 +19,8 @@ import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.data.local.model.TransactionWithCategory
 import com.example.expensemanagement.ui.main.AddExpenseActivity
 import com.example.expensemanagement.ui.main.MainActivity
-// Import thêm các Activity khác của bạn ở đây (AnalyticsActivity, ProfileActivity...)
+import com.example.expensemanagement.ui.analytics.AnalyticsActivity
+import com.example.expensemanagement.ui.profile.ProfileActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -89,14 +90,12 @@ class HistoryActivity : AppCompatActivity() {
 
         // Nút Thống kê
         findViewById<LinearLayout>(R.id.btnNavStatistics).setOnClickListener {
-            // Thay AnalyticsActivity bằng tên Activity thực tế của bạn
-            Toast.makeText(this, "Đang mở Thống kê...", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, AnalyticsActivity::class.java))
         }
 
         // Nút Profile
         findViewById<LinearLayout>(R.id.btnNavProfile).setOnClickListener {
-            // Thay ProfileActivity bằng tên Activity thực tế của bạn
-            Toast.makeText(this, "Đang mở Profile...", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
         // Nút Lịch sử (Chính là trang này, có thể không cần code hoặc chỉ scroll lên đầu)

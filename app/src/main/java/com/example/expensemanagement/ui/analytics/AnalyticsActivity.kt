@@ -5,9 +5,12 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.expensemanagement.R
 import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.data.local.entity.CategoryEntity
@@ -30,6 +33,8 @@ class AnalyticsActivity : AppCompatActivity() {
 
     private lateinit var pieChart: PieChart
     private lateinit var barChart: BarChart
+    private lateinit var rvCategoryDetails: RecyclerView
+    private lateinit var categoryAdapter: CategoryAnalyticsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +42,20 @@ class AnalyticsActivity : AppCompatActivity() {
 
         pieChart = findViewById(R.id.pieChart)
         barChart = findViewById(R.id.barChart)
+        rvCategoryDetails = findViewById(R.id.rvCategoryDetails)
 
+        setupRecyclerView()
         setupNavigation()
+    }
+
+    private fun setupRecyclerView() {
+        categoryAdapter = CategoryAnalyticsAdapter(emptyList())
+        rvCategoryDetails.layoutManager = LinearLayoutManager(this)
+        rvCategoryDetails.adapter = categoryAdapter
+    }
+
+    override fun onResume() {
+        super.onResume()
         loadDataFromDatabase()
     }
 
@@ -47,7 +64,6 @@ class AnalyticsActivity : AppCompatActivity() {
         val userId = sharedPref.getLong("current_user_id", -1)
 
         if (userId == -1L) {
-            Toast.makeText(this, "Không tìm thấy người dùng", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -66,15 +82,32 @@ class AnalyticsActivity : AppCompatActivity() {
                     findViewById<View>(R.id.llEmptyState).visibility = View.GONE
                     updatePieChart(transactions, categoryMap)
                     updateBarChart(transactions)
+                    updateCategoryList(transactions, categoryMap)
                 }
             }
         }
     }
 
+    private fun updateCategoryList(transactions: List<TransactionEntity>, categoryMap: Map<Long, CategoryEntity>) {
+        // Nhóm và tính tổng theo từng danh mục
+        val totalsByCategory = transactions.groupBy { it.categoryId }
+            .mapValues { entry -> 
+                entry.value.sumOf { if (it.type == "EXPENSE") -it.amount else it.amount }
+            }
+
+        val summaryList = totalsByCategory.map { (catId, total) ->
+            val category = categoryMap[catId]
+            val name = category?.name ?: "Khác"
+            val color = getCategoryColor(name)
+            CategorySummary(name, total, color, 0f)
+        }.sortedBy { it.amount } // Hiển thị chi tiêu (âm) nhiều nhất hoặc thu nhập ít nhất
+
+        categoryAdapter.updateData(summaryList)
+    }
+
     private fun updatePieChart(transactions: List<TransactionEntity>, categoryMap: Map<Long, CategoryEntity>) {
         val expenseTransactions = transactions.filter { it.type == "EXPENSE" }
 
-        // Nhóm theo categoryId và tính tổng amount
         val totalsByCategory = expenseTransactions.groupBy { it.categoryId }
             .mapValues { entry -> entry.value.sumOf { it.amount } }
 
@@ -87,6 +120,7 @@ class AnalyticsActivity : AppCompatActivity() {
         if (entries.isEmpty()) {
             pieChart.clear()
             pieChart.setNoDataText("Chưa có dữ liệu chi tiêu")
+            pieChart.invalidate()
             return
         }
 
@@ -98,7 +132,7 @@ class AnalyticsActivity : AppCompatActivity() {
         val data = PieData(dataSet)
         pieChart.data = data
         pieChart.description.isEnabled = false
-        pieChart.centerText = "Chi tiêu"
+        pieChart.centerText = "Cơ cấu chi tiêu"
         pieChart.animateY(1000)
         pieChart.invalidate()
     }
@@ -107,49 +141,75 @@ class AnalyticsActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         val currentMonth = calendar.get(Calendar.MONTH)
 
-        // Logic đơn giản: Thống kê chi tiêu theo tháng trong năm hiện tại
-        val monthlyData = FloatArray(12) { 0f }
+        val monthlyExpense = FloatArray(12) { 0f }
+        val monthlyIncome = FloatArray(12) { 0f }
 
-        transactions.filter { it.type == "EXPENSE" }.forEach { trans ->
+        transactions.forEach { trans ->
             calendar.timeInMillis = trans.transactionDate
             val month = calendar.get(Calendar.MONTH)
-            monthlyData[month] += trans.amount.toFloat()
+            if (trans.type == "EXPENSE") {
+                monthlyExpense[month] += trans.amount.toFloat()
+            } else {
+                monthlyIncome[month] += trans.amount.toFloat()
+            }
         }
 
-        val entries = ArrayList<BarEntry>()
+        val expEntries = ArrayList<BarEntry>()
+        val incEntries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
 
-        // Lấy 6 tháng gần nhất
         for (i in 5 downTo 0) {
             val monthIdx = (currentMonth - i + 12) % 12
-            entries.add(BarEntry((5 - i).toFloat(), monthlyData[monthIdx]))
+            expEntries.add(BarEntry((5 - i).toFloat(), monthlyExpense[monthIdx]))
+            incEntries.add(BarEntry((5 - i).toFloat(), monthlyIncome[monthIdx]))
             labels.add("T${monthIdx + 1}")
         }
 
-        val dataSet = BarDataSet(entries, "Chi tiêu hàng tháng")
-        dataSet.color = Color.parseColor("#2196F3")
+        val expDataSet = BarDataSet(expEntries, "Chi tiêu")
+        expDataSet.color = Color.parseColor("#F44336")
 
-        val data = BarData(dataSet)
+        val incDataSet = BarDataSet(incEntries, "Thu nhập")
+        incDataSet.color = Color.parseColor("#4CAF50")
+
+        val data = BarData(incDataSet, expDataSet)
+        data.barWidth = 0.35f
         barChart.data = data
+        barChart.groupBars(-0.5f, 0.3f, 0.02f) 
 
-        // Cấu hình trục X
         val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.granularity = 1f
+        xAxis.axisMinimum = -0.5f
+        xAxis.axisMaximum = 5.5f
+        xAxis.setCenterAxisLabels(true)
 
         barChart.description.isEnabled = false
+        barChart.axisRight.isEnabled = false
         barChart.animateY(1000)
         barChart.invalidate()
     }
 
-    private fun setupNavigation() {
-        val btnNavOverview = findViewById<View>(R.id.btnNavOverview)
-        val btnNavProfile = findViewById<View>(R.id.btnNavProfile)
-        val btnNavCategories = findViewById<View>(R.id.btnNavCategories)
+    private fun getCategoryColor(name: String): String {
+        return when (name) {
+            "Ăn uống" -> "#FFA500"
+            "Đi lại" -> "#A52A2A"
+            "Mua sắm" -> "#0000FF"
+            "Y tế" -> "#00FF7F"
+            "Giáo dục" -> "#FF4500"
+            "Tiền điện" -> "#00BFFF"
+            "Mỹ phẩm" -> "#FF69B4"
+            "Lương" -> "#4CAF50"
+            "Số dư đầu" -> "#4DB6E2"
+            "Chi tiêu khác" -> "#9E9E9E"
+            "Thu nhập khác" -> "#8BC34A"
+            else -> "#757575"
+        }
+    }
 
-        btnNavOverview?.setOnClickListener {
+    private fun setupNavigation() {
+        findViewById<View>(R.id.btnNavOverview)?.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             })
@@ -161,10 +221,13 @@ class AnalyticsActivity : AppCompatActivity() {
             })
             overridePendingTransition(0, 0)
         }
-        btnNavCategories?.setOnClickListener {
+        findViewById<View>(R.id.btnNavCategories)?.setOnClickListener {
             startActivity(Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java))
         }
-        btnNavProfile?.setOnClickListener {
+        findViewById<View>(R.id.btnNavStatistics)?.setOnClickListener {
+            // Đã ở trang thống kê, có thể scroll lên đầu
+        }
+        findViewById<View>(R.id.btnNavProfile)?.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             })

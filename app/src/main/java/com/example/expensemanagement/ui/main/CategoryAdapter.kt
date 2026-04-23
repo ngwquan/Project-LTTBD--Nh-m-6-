@@ -63,14 +63,17 @@ class CategoryAdapter(
     private fun getCategoryColor(name: String): String {
         return when (name) {
             "Ăn uống" -> "#FFA500"
-            "Di lại" -> "#A52A2A"
+            "Đi lại" -> "#A52A2A"
             "Mua sắm" -> "#0000FF"
             "Y tế" -> "#00FF7F"
             "Giáo dục" -> "#FF4500"
             "Tiền điện" -> "#00BFFF"
             "Mỹ phẩm" -> "#FF69B4"
             "Lương" -> "#4CAF50"
-            else -> "#9E9E9E"
+            "Số dư đầu" -> "#4DB6E2"
+            "Chi tiêu khác" -> "#9E9E9E"
+            "Thu nhập khác" -> "#8BC34A"
+            else -> "#757575"
         }
     }
 
