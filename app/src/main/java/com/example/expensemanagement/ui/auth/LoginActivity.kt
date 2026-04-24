@@ -1,5 +1,6 @@
 package com.example.expensemanagement.ui.auth
 
+import com.example.expensemanagement.data.local.dao.UserDao
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,22 +14,35 @@ import com.example.expensemanagement.data.local.database.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
+import android.app.AlertDialog
+
 
 class LoginActivity : AppCompatActivity() {
 
     private var isPasswordVisible = false
+    private lateinit var userDao: UserDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isLoggedIn = globalPref.getBoolean("is_logged_in", false)
+        val userId = globalPref.getLong("current_user_id", -1)
+
+        if (isLoggedIn && userId != -1L) {
+            proceedToSetup(userId)
+            return
+        }
         val edtEmail = findViewById<EditText>(R.id.edtEmail)
         val edtPassword = findViewById<EditText>(R.id.edtPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val txtRegister = findViewById<TextView>(R.id.txtRegister)
         val imgToggle = findViewById<ImageView>(R.id.imgToggle)
         val db = AppDatabase.getDatabase(this)
-        val userDao = db.userDao()
+        val rememberCheckBox = findViewById<CheckBox>(R.id.rememberLogin)
+        val txtForget = findViewById<TextView>(R.id.forgetPassword)
 
         // xử lý hiện/ẩn mật khẩu
         imgToggle.setOnClickListener {
@@ -43,6 +57,12 @@ class LoginActivity : AppCompatActivity() {
             edtPassword.setSelection(edtPassword.text.length)
         }
 
+
+        // Xử lý sự kiện quên mật khẩu
+        txtForget.setOnClickListener {
+            startActivity(Intent(this, ResetPasswordActivity::class.java))
+
+        }
         // xử lý sự kiện Đăng nhập
         btnLogin.setOnClickListener {
             val email = edtEmail.text.toString().trim()
@@ -55,18 +75,33 @@ class LoginActivity : AppCompatActivity() {
 
             // Sử dụng Coroutine để kiểm tra Database
             lifecycleScope.launch(Dispatchers.IO) {
+                userDao = db.userDao()
                 // Kiểm tra trong Database
                 val user = userDao.getUserByEmail(email)
+                val hashedInput = hashPassword(password)
 
                 withContext(Dispatchers.Main) {
-                    if (user != null && user.passwordHash == password) {
+                    if (user != null && user.passwordHash == hashedInput) {
                         // Lưu thông tin username trước khi chuyển màn hình
-                        val sharedPref = getSharedPreferences("UserPrefs_${user.id}", Context.MODE_PRIVATE)
-                        sharedPref.edit().putString("username", user.fullName).apply()
+                        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                        globalPref.edit().apply {
+                            putLong("current_user_id", user.id)
+                            putBoolean("is_logged_in", rememberCheckBox.isChecked)
+                            apply()
+                        }
+
+                        val userPref = getSharedPreferences("UserPrefs_${user.id}", Context.MODE_PRIVATE)
+                        userPref.edit()
+                            .putString("username", user.fullName)
+                            .apply()
 
                         proceedToSetup(user.id)
                     } else {
-                        Toast.makeText(this@LoginActivity, "Email hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Email hoặc mật khẩu không chính xác",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -76,6 +111,13 @@ class LoginActivity : AppCompatActivity() {
         txtRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+    }
+
+    private fun hashPassword(password: String): String {
+        val bytes = password.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return digest.joinToString("") { "%02x".format(it) }
     }
 
     private fun proceedToSetup(userId: Long) {

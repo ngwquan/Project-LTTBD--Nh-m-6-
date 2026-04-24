@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,10 +29,49 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val btnNavOverview = findViewById<android.view.View>(R.id.btnNavOverview)
+        val btnNavHistory = findViewById<android.view.View>(R.id.btnNavHistory)
+        val btnNavStatistics = findViewById<android.view.View>(R.id.btnNavStatistics)
+        val btnNavProfile = findViewById<android.view.View>(R.id.btnNavProfile)
+        val fabAdd = findViewById<FloatingActionButton>(R.id.fab_add)
+
         txtWelcome = findViewById(R.id.txtWelcome)
         txtMoney = findViewById(R.id.txtMoney)
         tvTotalExpense = findViewById(R.id.tvTotalExpense)
         tvTotalIncome = findViewById(R.id.tvTotalIncome)
+
+        //  TỔNG QUAN
+        btnNavOverview?.setOnClickListener {
+        }
+        // LỊCH SỬ GIAO DỊCH
+        btnNavHistory?.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
+        }
+
+        // THÊM GIAO DỊCH MỚI
+        fabAdd?.setOnClickListener {
+            val intent = Intent(this, AddExpenseActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
+        }
+        // THỐNG KÊ
+        btnNavStatistics?.setOnClickListener {
+            val intent = Intent(this, AnalyticsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
+        }
+        // HỒ SƠ
+        btnNavProfile?.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
+        }
 
         setupNavigation()
     }
@@ -82,33 +122,33 @@ class MainActivity : AppCompatActivity() {
         val currency = userPrefs.getString("currency", "₫") ?: "₫"
 
         val amount_show = userPrefs.getLong("initial_balance", 0L)
-        
+
         txtWelcome.text = "Xin chào, $usernamePref"
 
         lifecycleScope.launch(Dispatchers.IO) {
             val db = AppDatabase.getDatabase(this@MainActivity)
             val user = db.userDao().getById(userId)
             val transactions = db.transactionDao().getByUser(userId)
-            
+
             val displayName = user?.fullName ?: usernamePref
 
             // Tính số dư tổng quát
             var totalAllExp = 0.0
             var totalAllInc = 0.0
-            
+
             // Tính báo cáo tháng này
             var monthExp = 0.0
             var monthInc = 0.0
-            
+
             val calendar = Calendar.getInstance()
             val currentMonth = calendar.get(Calendar.MONTH)
             val currentYear = calendar.get(Calendar.YEAR)
-            
+
             for (t in transactions) {
                 // Tính số dư (tất cả thời gian)
                 if (t.type == "EXPENSE") totalAllExp += t.amount
                 else totalAllInc += t.amount
-                
+
                 // Lọc cho tháng này
                 calendar.timeInMillis = t.transactionDate
                 if (calendar.get(Calendar.MONTH) == currentMonth && calendar.get(Calendar.YEAR) == currentYear) {
@@ -116,7 +156,7 @@ class MainActivity : AppCompatActivity() {
                     else monthInc += t.amount
                 }
             }
-            
+
             val balance = amount_show + (totalAllInc - totalAllExp).toLong()
 
             withContext(Dispatchers.Main) {
@@ -124,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 txtMoney.text = MoneyUtils.format(balance.toString(), currency)
                 tvTotalExpense.text = MoneyUtils.format(monthExp.toLong().toString(), currency)
                 tvTotalIncome.text = MoneyUtils.format(monthInc.toLong().toString(), currency)
-                
+
                 userPrefs.edit()
                     .putString("money", balance.toLong().toString())
                     .putString("username", displayName)

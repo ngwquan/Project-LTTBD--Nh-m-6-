@@ -39,7 +39,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".ui.setup.CategoryActivity"
+            android:name=".ui.main.CategoryAdapter"
             android:exported="false"
             android:label="Quản lý danh mục"
             android:screenOrientation="portrait"
@@ -70,6 +70,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.analytics.AnalyticsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.auth.ResetPasswordActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
