@@ -28,6 +28,11 @@ interface UserDao {
     @Query("SELECT * FROM users")
     suspend fun getAll(): List<UserEntity>
 
+    @Query("UPDATE users SET passwordHash = :newPassword WHERE user_id = :userId")
+    suspend fun updatePasswordById(userId: Long, newPassword: String)
+
+    @Query("SELECT * FROM users WHERE email = :input OR username = :input LIMIT 1")
+    suspend fun getUserByEmailOrUsername(input: String): UserEntity?
     @Delete
     suspend fun delete(user: UserEntity)
 }
