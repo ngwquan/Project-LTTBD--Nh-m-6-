@@ -29,49 +29,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnNavOverview = findViewById<android.view.View>(R.id.btnNavOverview)
-        val btnNavHistory = findViewById<android.view.View>(R.id.btnNavHistory)
-        val btnNavStatistics = findViewById<android.view.View>(R.id.btnNavStatistics)
-        val btnNavProfile = findViewById<android.view.View>(R.id.btnNavProfile)
-        val fabAdd = findViewById<FloatingActionButton>(R.id.fab_add)
-
         txtWelcome = findViewById(R.id.txtWelcome)
         txtMoney = findViewById(R.id.txtMoney)
         tvTotalExpense = findViewById(R.id.tvTotalExpense)
         tvTotalIncome = findViewById(R.id.tvTotalIncome)
-
-        //  TỔNG QUAN
-        btnNavOverview?.setOnClickListener {
-        }
-        // LỊCH SỬ GIAO DỊCH
-        btnNavHistory?.setOnClickListener {
-            val intent = Intent(this, HistoryActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
-        }
-
-        // THÊM GIAO DỊCH MỚI
-        fabAdd?.setOnClickListener {
-            val intent = Intent(this, AddExpenseActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
-        }
-        // THỐNG KÊ
-        btnNavStatistics?.setOnClickListener {
-            val intent = Intent(this, AnalyticsActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
-        }
-        // HỒ SƠ
-        btnNavProfile?.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN,0, 0)
-        }
 
         setupNavigation()
     }
@@ -157,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            val balance = amount_show + (totalAllInc - totalAllExp).toLong()
+            val balance = (totalAllInc - totalAllExp).toLong()
 
             withContext(Dispatchers.Main) {
                 txtWelcome.text = "Xin chào, $displayName"
@@ -166,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 tvTotalIncome.text = MoneyUtils.format(monthInc.toLong().toString(), currency)
 
                 userPrefs.edit()
-                    .putString("money", balance.toLong().toString())
+                    .putString("money", balance.toString())
                     .putString("username", displayName)
                     .apply()
             }

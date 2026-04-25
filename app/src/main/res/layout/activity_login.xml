@@ -57,12 +57,12 @@
 
                     <EditText
                         android:id="@+id/edtPassword"
-                        android:hint="Mật khẩu"
-                        android:padding="14dp"
-                        android:background="@drawable/bg_input"
-                        android:inputType="textPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_input"
+                        android:hint="Mật khẩu"
+                        android:inputType="textPassword"
+                        android:padding="14dp" />
 
                     <ImageView
                         android:id="@+id/imgToggle"
@@ -72,9 +72,22 @@
                         android:padding="12dp"
                         android:layout_width="40dp"
                         android:layout_height="40dp"/>
+
+
                 </RelativeLayout>
 
+                <CheckBox
+                    android:id="@+id/rememberLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ghi nhớ mật khẩu"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="13dp"
+
+                    />
+
                 <TextView
+                    android:id="@+id/forgetPassword"
                     android:text="Quên mật khẩu"
                     android:textColor="#1DA1F2"
                     android:layout_gravity="end"

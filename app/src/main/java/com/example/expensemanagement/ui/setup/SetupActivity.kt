@@ -102,8 +102,6 @@ class SetupActivity : AppCompatActivity() {
                 .putString("currency", currency)
                 .putBoolean("isSetupDone", true) // Đánh dấu đã setup xong
                 .commit() // Dùng commit để ghi ngay lập tức
-            val amount = rawMoney.toDoubleOrNull() ?: 0.0
-            val currency = spinner.selectedItem.toString()
 
             lifecycleScope.launch(Dispatchers.IO) {
                 val db = AppDatabase.getDatabase(this@SetupActivity)
@@ -132,7 +130,7 @@ class SetupActivity : AppCompatActivity() {
                             userId = userId,
                             walletId = defaultWallet.id,
                             categoryId = initialCat.id,
-                            amount = amount,
+                            amount = amount.toDouble(),
                             type = "INCOME",
                             note = "Số dư thiết lập ban đầu",
                             transactionDate = System.currentTimeMillis()
