@@ -73,6 +73,7 @@
                             android:text="Tiền mặt"
                             android:textColor="#212121"
                             android:textSize="16sp" />
+
                         <TextView
                             android:id="@+id/txtMoney"
                             android:layout_width="wrap_content"

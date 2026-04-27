@@ -93,13 +93,14 @@ class SetupActivity : AppCompatActivity() {
 
             val rawMoney = moneyFormatted.replace(".", "")
             val amount = rawMoney.toLong()
-            val currency = spinner.selectedItem.toString()
+            val position = spinner.selectedItemPosition
+            val currencyCode = resources.getStringArray(R.array.currency_code)[position]
 
             // Lưu dữ liệu vào SharedPreferences của User hiện tại
             userPrefs.edit()
                 .putString("money", rawMoney)
                 .putLong("initial_balance", amount)
-                .putString("currency", currency)
+                .putString("currency", currencyCode)
                 .putBoolean("isSetupDone", true) // Đánh dấu đã setup xong
                 .commit() // Dùng commit để ghi ngay lập tức
 
@@ -141,7 +142,7 @@ class SetupActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     userPrefs.edit()
                         .putString("money", rawMoney)
-                        .putString("currency", currency)
+                        .putString("currency", currencyCode)
                         .putBoolean("isSetupDone", true)
                         .apply()
 

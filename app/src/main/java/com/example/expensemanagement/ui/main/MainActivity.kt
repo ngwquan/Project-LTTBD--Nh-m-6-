@@ -81,9 +81,6 @@ class MainActivity : AppCompatActivity() {
         val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
         val usernamePref = userPrefs.getString("username", "User")
         val currency = userPrefs.getString("currency", "₫") ?: "₫"
-
-        val amount_show = userPrefs.getLong("initial_balance", 0L)
-
         txtWelcome.text = "Xin chào, $usernamePref"
 
         lifecycleScope.launch(Dispatchers.IO) {
