@@ -35,6 +35,7 @@ class AnalyticsActivity : AppCompatActivity() {
     private lateinit var barChart: BarChart
     private lateinit var rvCategoryDetails: RecyclerView
     private lateinit var categoryAdapter: CategoryAnalyticsAdapter
+    private lateinit var tvProfitLossStatus: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,7 @@ class AnalyticsActivity : AppCompatActivity() {
         pieChart = findViewById(R.id.pieChart)
         barChart = findViewById(R.id.barChart)
         rvCategoryDetails = findViewById(R.id.rvCategoryDetails)
+        tvProfitLossStatus = findViewById(R.id.tvProfitLossStatus)
 
         setupRecyclerView()
         setupNavigation()
@@ -80,11 +82,36 @@ class AnalyticsActivity : AppCompatActivity() {
                 } else {
                     findViewById<View>(R.id.analyticsContent).visibility = View.VISIBLE
                     findViewById<View>(R.id.llEmptyState).visibility = View.GONE
+                    updateProfitLossStatus(transactions)
                     updatePieChart(transactions, categoryMap)
                     updateBarChart(transactions)
                     updateCategoryList(transactions, categoryMap)
                 }
             }
+        }
+    }
+
+    private fun updateProfitLossStatus(transactions: List<TransactionEntity>) {
+        var totalIncome = 0.0
+        var totalExpense = 0.0
+
+        for (t in transactions) {
+            when (t.type) {
+                "INCOME" -> totalIncome += t.amount
+                "EXPENSE" -> totalExpense += t.amount
+            }
+        }
+
+        val balance = totalIncome - totalExpense
+        if (balance > 0) {
+            tvProfitLossStatus.text = "Lãi: \$${String.format(Locale.US, "%.2f", balance)}"
+            tvProfitLossStatus.setTextColor(Color.parseColor("#4CAF50")) // Xanh lá cây
+        } else if (balance < 0) {
+            tvProfitLossStatus.text = "Lỗ: \$${String.format(Locale.US, "%.2f", Math.abs(balance))}"
+            tvProfitLossStatus.setTextColor(Color.parseColor("#F44336")) // Đỏ
+        } else {
+            tvProfitLossStatus.text = "Cân bằng: \$0.00"
+            tvProfitLossStatus.setTextColor(Color.parseColor("#757575")) // Xám
         }
     }
 
