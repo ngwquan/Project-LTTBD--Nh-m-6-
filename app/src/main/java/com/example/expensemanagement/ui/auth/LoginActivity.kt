@@ -4,7 +4,6 @@ import com.example.expensemanagement.data.local.dao.UserDao
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.expensemanagement.R
@@ -15,7 +14,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
-import android.app.AlertDialog
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 
 
 class LoginActivity : AppCompatActivity() {
@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
             proceedToSetup(userId)
             return
         }
-        val edtEmail = findViewById<EditText>(R.id.edtEmail)
+        val edtEmailorUsername = findViewById<EditText>(R.id.edtEmailorUsername)
         val edtPassword = findViewById<EditText>(R.id.edtPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val txtRegister = findViewById<TextView>(R.id.txtRegister)
@@ -48,11 +48,11 @@ class LoginActivity : AppCompatActivity() {
         imgToggle.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
-                edtPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                imgToggle.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+                edtPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                imgToggle.setImageResource(R.drawable.invisible_ic_eye)
             } else {
-                edtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                imgToggle.setImageResource(android.R.drawable.ic_menu_view)
+                edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+                imgToggle.setImageResource(R.drawable.visible_ic_eye)
             }
             edtPassword.setSelection(edtPassword.text.length)
         }
@@ -61,14 +61,13 @@ class LoginActivity : AppCompatActivity() {
         // Xử lý sự kiện quên mật khẩu
         txtForget.setOnClickListener {
             startActivity(Intent(this, ResetPasswordActivity::class.java))
-
         }
         // xử lý sự kiện Đăng nhập
         btnLogin.setOnClickListener {
-            val email = edtEmail.text.toString().trim()
+            val EmailOrUsername = edtEmailorUsername.text.toString().trim()
             val password = edtPassword.text.toString().trim()
 
-            if (email.isEmpty() || password.isEmpty()) {
+            if (EmailOrUsername.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -77,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch(Dispatchers.IO) {
                 userDao = db.userDao()
                 // Kiểm tra trong Database
-                val user = userDao.getUserByEmail(email)
+                val user = userDao.getUserByEmailOrUsername(EmailOrUsername)
                 val hashedInput = hashPassword(password)
 
                 withContext(Dispatchers.Main) {
@@ -92,7 +91,7 @@ class LoginActivity : AppCompatActivity() {
 
                         val userPref = getSharedPreferences("UserPrefs_${user.id}", Context.MODE_PRIVATE)
                         userPref.edit()
-                            .putString("username", user.fullName)
+                            .putString("username", user.username)
                             .apply()
 
                         proceedToSetup(user.id)

@@ -1,20 +1,22 @@
 package com.example.expensemanagement.ui.auth
 
 import android.os.Bundle
-import android.widget.Toast
+import android.text.InputType
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.expensemanagement.R
 import com.example.expensemanagement.data.local.database.AppDatabase
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
-
+import android.view.View
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 class ResetPasswordActivity : AppCompatActivity() {
-
+    private var isPasswordVisible = false
     private fun hashPassword(password: String): String {
         val bytes = password.toByteArray()
         val md = MessageDigest.getInstance("SHA-256")
@@ -26,13 +28,42 @@ class ResetPasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_reset_password)
 
-        val edtAccount = findViewById<TextInputEditText>(R.id.edtAccount)
-                val edtNewPass = findViewById<TextInputEditText>(R.id.edtNewPassword)
-                val edtConfirm = findViewById<TextInputEditText>(R.id.edtConfirmPassword)
-                val btnSave = findViewById<MaterialButton>(R.id.btnSave)
+        val edtAccount = findViewById<EditText>(R.id.edtAccount)
+        val edtNewPass = findViewById<EditText>(R.id.edtNewPassword)
+        val edtConfirm = findViewById<EditText>(R.id.edtConfirmPassword)
+        val btnSave = findViewById<MaterialButton>(R.id.btnSave)
+        val btnbackLogin = findViewById<ImageView>(R.id.btnBackLogin)
+        val imgTogglePass = findViewById<ImageView>(R.id.imgTogglePass)
+        val imgToggleConfirmPass = findViewById<ImageView>(R.id.imgToggleConfirmPass)
 
-                val db = AppDatabase.Companion.getDatabase(this)
+        val toggleListener = View.OnClickListener {
+            // xử lý chung ẩn/hiện mật khẩu
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                edtNewPass.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                edtConfirm.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                imgTogglePass.setImageResource(R.drawable.invisible_ic_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.invisible_ic_eye)
+            } else {
+                edtNewPass.transformationMethod = PasswordTransformationMethod.getInstance()
+                edtConfirm.transformationMethod = PasswordTransformationMethod.getInstance()
+                imgTogglePass.setImageResource(R.drawable.visible_ic_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.visible_ic_eye)
+            }
+            edtNewPass.setSelection(edtNewPass.text.length)
+            edtConfirm.setSelection(edtConfirm.text.length)
+        }
+
+        imgTogglePass.setOnClickListener(toggleListener)
+        imgToggleConfirmPass.setOnClickListener(toggleListener)
+
+
+        val db = AppDatabase.Companion.getDatabase(this)
         val userDao = db.userDao()
+
+        btnbackLogin.setOnClickListener {
+            finish()
+        }
 
         btnSave.setOnClickListener {
             val account = edtAccount.text.toString().trim()
