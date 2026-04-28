@@ -53,11 +53,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        findViewById<android.view.View>(R.id.tvViewAll)?.setOnClickListener {
-            val intent = Intent(this, HistoryActivity::class.java)
-            startActivity(intent)
-        }
-
         findViewById<android.view.View>(R.id.btnNavStatistics)?.setOnClickListener {
             val intent = Intent(this, AnalyticsActivity::class.java)
             startActivity(intent)

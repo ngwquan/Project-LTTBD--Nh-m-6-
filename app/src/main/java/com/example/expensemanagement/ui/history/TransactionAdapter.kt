@@ -13,7 +13,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class TransactionAdapter(
-    private var transactions: List<TransactionWithCategory>
+    private var transactions: List<TransactionWithCategory>,
+    private var onitemclick: (TransactionWithCategory) -> Unit
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
 
     // LỚP VIEW HOLDER: Ánh xạ chính xác các ID từ item_transaction.xml
@@ -63,6 +64,9 @@ class TransactionAdapter(
             "Tiền thưởng" -> "#FFF9C4" // Vàng chanh
             else        -> "#E0E0E0" // Màu xám mặc định
         }
+        // 5. Bắt sự kiện click vào item để mở chi tiết
+        holder.itemView.setOnClickListener { onitemclick(item) }
+
 
         // Cập nhật màu sắc cho vòng tròn icon
         holder.viewCategoryColor.background?.setTint(Color.parseColor(displayColor))

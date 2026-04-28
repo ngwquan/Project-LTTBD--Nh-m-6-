@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -71,7 +68,17 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        transactionAdapter = TransactionAdapter(emptyList())
+        transactionAdapter = TransactionAdapter(emptyList()) {
+            item -> val intent = Intent(this, TransactionDetailActivity::class.java)
+            intent.putExtra("transactionId", item.id)
+
+            intent.putExtra("category", item.categoryName)
+            intent.putExtra("amount", item.amount.toLong())
+            intent.putExtra("date", item.date)
+            intent.putExtra("note", item.note)
+            intent.putExtra("type", item.type)
+            startActivity(intent)
+        }
         rvTransactions.layoutManager = LinearLayoutManager(this)
         rvTransactions.adapter = transactionAdapter
     }
