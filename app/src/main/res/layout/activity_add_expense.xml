@@ -28,8 +28,8 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="6dp"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="#4DB6E2" />
+            android:src="@drawable/ic_back"
+            app:tint="#2196F3" />
 
         <View
             android:layout_width="0dp"

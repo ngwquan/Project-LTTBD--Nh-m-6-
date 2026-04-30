@@ -2,6 +2,9 @@ package com.example.expensemanagement.ui.auth
 
 import android.content.Context
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +18,8 @@ import java.security.MessageDigest
 
 class RegisterActivity : AppCompatActivity() {
 
+    private var isPasswordVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -26,6 +31,29 @@ class RegisterActivity : AppCompatActivity() {
         val edtConfirm = findViewById<EditText>(R.id.edtConfirm)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val txtLogin = findViewById<TextView>(R.id.txtLogin)
+        val imgTogglePass = findViewById<ImageView>(R.id.imgTogglePass)
+        val imgToggleConfirmPass = findViewById<ImageView>(R.id.imgToggleConfirmPass)
+
+        val toggleListener = View.OnClickListener {
+            // xử lý chung ẩn/hiện mật khẩu
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                edtPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                edtConfirm.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                imgTogglePass.setImageResource(R.drawable.invisible_ic_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.invisible_ic_eye)
+            } else {
+                edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+                edtConfirm.transformationMethod = PasswordTransformationMethod.getInstance()
+                imgTogglePass.setImageResource(R.drawable.visible_ic_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.visible_ic_eye)
+            }
+            edtPassword.setSelection(edtPassword.text.length)
+            edtConfirm.setSelection(edtConfirm.text.length)
+        }
+
+        imgTogglePass.setOnClickListener(toggleListener)
+        imgToggleConfirmPass.setOnClickListener(toggleListener)
 
         val db = AppDatabase.getDatabase(this)
         val userDao = db.userDao()

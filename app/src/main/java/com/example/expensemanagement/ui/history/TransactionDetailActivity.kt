@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.app.AlertDialog
 import android.widget.Button
+import android.widget.ImageView
 import androidx.lifecycle.lifecycleScope
 import com.example.expensemanagement.data.local.database.AppDatabase
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +28,7 @@ class TransactionDetailActivity : AppCompatActivity() {
         val tvAmount = findViewById<TextView>(R.id.tvAmount)
         val tvDate = findViewById<TextView>(R.id.tvDate)
         val tvNote = findViewById<TextView>(R.id.tvNote)
-
+        val btnbackLogin = findViewById<ImageView>(R.id.btnBackLogin)
         val btnDelete = findViewById<FloatingActionButton>(R.id.fabDelete)
         val transactionId = intent.getLongExtra("transactionId", -1L)
 
@@ -57,6 +58,10 @@ class TransactionDetailActivity : AppCompatActivity() {
         } else {
             tvAmount.text = "+ $formattedAmount"
             tvAmount.setTextColor(Color.parseColor("#4CAF50"))
+        }
+
+        btnbackLogin.setOnClickListener {
+            finish()
         }
 
         btnDelete.setOnClickListener {

@@ -86,6 +86,14 @@ class SetupActivity : AppCompatActivity() {
 
         btnSave.setOnClickListener {
             val moneyFormatted = edtMoney.text.toString()
+
+            // Kểm tra spinner có được chọn hay không
+            if (spinner.selectedItemPosition == 0) {
+                Toast.makeText(this, "Vui lòng chọn đơn vị tiền tệ", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Kiểm tra xem số tiền có hợp lệ không
             if (moneyFormatted.isEmpty()) {
                 edtMoney.error = "Vui lòng nhập số tiền"
                 return@setOnClickListener

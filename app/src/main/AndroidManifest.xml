@@ -16,6 +16,7 @@
         android:theme="@style/Theme.ExpenseManagement"
         tools:targetApi="31">
 
+        <!-- AUTH -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true"
@@ -32,52 +33,40 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.auth.ResetPasswordActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
+        <!-- SETUP -->
         <activity
             android:name=".ui.setup.SetupActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <activity
-            android:name=".ui.main.CategoryAdapter"
-            android:exported="false"
-            android:label="Quản lý danh mục"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
+        <!-- MAIN -->
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- ADD -->
         <activity
             android:name=".ui.main.AddExpenseActivity"
             android:exported="false"
             android:label="Thêm chi tiêu"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity
-            android:name=".ui.history.HistoryActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+
+        <!-- DETAIL OF TRANSACTION -->
         <activity
             android:name=".ui.history.TransactionDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.profile.ProfileActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+
+        <!-- PROFILE -->
         <activity
             android:name=".ui.profile.EditProfileActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.analytics.AnalyticsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.auth.ResetPasswordActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
