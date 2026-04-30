@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="btnNavOverview" type="id" />
+    <item name="btnNavHistory" type="id" />
+    <item name="btnNavCategories" type="id" />
+    <item name="btnNavStatistics" type="id" />
+    <item name="btnNavProfile" type="id" />
+</resources>
