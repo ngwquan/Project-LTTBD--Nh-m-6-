@@ -3,27 +3,20 @@ package com.example.expensemanagement.ui.history
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
+import android.text.*
+import android.view.*
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.example.expensemanagement.R
 import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.data.local.model.TransactionWithCategory
-import com.example.expensemanagement.ui.main.AddExpenseActivity
-import com.example.expensemanagement.ui.main.MainActivity
-import com.example.expensemanagement.ui.analytics.AnalyticsActivity
-import com.example.expensemanagement.ui.profile.ProfileActivity
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HistoryActivity : AppCompatActivity() {
+class HistoryFragment : Fragment() {
 
     private lateinit var rvTransactions: RecyclerView
     private lateinit var transactionAdapter: TransactionAdapter
@@ -35,12 +28,19 @@ class HistoryActivity : AppCompatActivity() {
     private var isExpenseMode = true
     private var fullList = listOf<TransactionWithCategory>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_history)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.activity_history, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // 1. Ánh xạ View
-        initViews()
+        initViews(view)
 
         // 2. Thiết lập RecyclerView
         setupRecyclerView()
@@ -54,22 +54,19 @@ class HistoryActivity : AppCompatActivity() {
 
         // 5. Lắng nghe dữ liệu từ Database (Sử dụng Flow để cập nhật Real-time)
         observeTransactions()
-
-        // 6. Xử lý điều hướng Bottom Navigation ĐỘNG
-        setupBottomNavigation()
     }
 
-    private fun initViews() {
-        rvTransactions = findViewById(R.id.rvTransactions)
-        tvTabExpense = findViewById(R.id.tvTabExpenseHistory)
-        tvTabIncome = findViewById(R.id.tvTabIncomeHistory)
-        edtSearch = findViewById(R.id.edtSearch)
-        tvEmptyData = findViewById(R.id.tvEmptyData)
+    private fun initViews(view: View) {
+        rvTransactions = view.findViewById(R.id.rvTransactions)
+        tvTabExpense = view.findViewById(R.id.tvTabExpenseHistory)
+        tvTabIncome = view.findViewById(R.id.tvTabIncomeHistory)
+        edtSearch = view.findViewById(R.id.edtSearch)
+        tvEmptyData = view.findViewById(R.id.tvEmptyData)
     }
 
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter(emptyList()) {
-            item -> val intent = Intent(this, TransactionDetailActivity::class.java)
+            item -> val intent = Intent(requireContext(), TransactionDetailActivity::class.java)
             intent.putExtra("transactionId", item.id)
 
             intent.putExtra("category", item.categoryName)
@@ -77,38 +74,11 @@ class HistoryActivity : AppCompatActivity() {
             intent.putExtra("date", item.date)
             intent.putExtra("note", item.note)
             intent.putExtra("type", item.type)
+
             startActivity(intent)
         }
-        rvTransactions.layoutManager = LinearLayoutManager(this)
+        rvTransactions.layoutManager = LinearLayoutManager(requireContext())
         rvTransactions.adapter = transactionAdapter
-    }
-
-    private fun setupBottomNavigation() {
-        // Nút Tổng quan
-        findViewById<LinearLayout>(R.id.btnNavOverview).setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
-
-        // Nút Thêm mới (Màn hình thêm chi tiêu chúng ta vừa làm)
-        findViewById<LinearLayout>(R.id.btnNavCategories).setOnClickListener {
-            startActivity(Intent(this, AddExpenseActivity::class.java))
-        }
-
-        // Nút Thống kê
-        findViewById<LinearLayout>(R.id.btnNavStatistics).setOnClickListener {
-            startActivity(Intent(this, AnalyticsActivity::class.java))
-        }
-
-        // Nút Profile
-        findViewById<LinearLayout>(R.id.btnNavProfile).setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
-        }
-
-        // Nút Lịch sử (Chính là trang này, có thể không cần code hoặc chỉ scroll lên đầu)
-        findViewById<LinearLayout>(R.id.btnNavHistory).setOnClickListener {
-            rvTransactions.smoothScrollToPosition(0)
-        }
     }
 
     private fun switchTab(isExpense: Boolean) {
@@ -128,11 +98,13 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun observeTransactions() {
-        val userId = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).getLong("current_user_id", -1)
+        val context = requireContext()
+
+        val userId = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).getLong("current_user_id", -1)
         if (userId == -1L) return
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getDatabase(this@HistoryActivity)
+            val db = AppDatabase.getDatabase(context)
             db.transactionDao().getAllTransactionsWithCategory(userId).collectLatest { list ->
                 fullList = list
                 withContext(Dispatchers.Main) {

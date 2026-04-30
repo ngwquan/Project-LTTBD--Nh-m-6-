@@ -1,128 +1,96 @@
 package com.example.expensemanagement.ui.main
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.Fragment
 import com.example.expensemanagement.R
-import com.example.expensemanagement.data.local.database.AppDatabase
-import com.example.expensemanagement.ui.analytics.AnalyticsActivity
-import com.example.expensemanagement.ui.history.HistoryActivity
-import com.example.expensemanagement.ui.profile.ProfileActivity
-import com.example.expensemanagement.utils.MoneyUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.expensemanagement.ui.analytics.AnalyticsFragment
+import com.example.expensemanagement.ui.history.HistoryFragment
+import com.example.expensemanagement.ui.profile.ProfileFragment
 import java.util.*
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var txtMoney: TextView
-    private lateinit var tvTotalExpense: TextView
-    private lateinit var tvTotalIncome: TextView
-    private lateinit var txtWelcome: TextView
+    private lateinit var bottomNav: BottomNavigationView
+    private lateinit var fabAdd: FloatingActionButton
+    private val overviewFragment = OverviewFragment()
+    private val historyFragment = HistoryFragment()
+    private val analyticsFragment = AnalyticsFragment()
+    private val profileFragment = ProfileFragment()
+
+    private var activeFragment: Fragment = overviewFragment
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        txtWelcome = findViewById(R.id.txtWelcome)
-        txtMoney = findViewById(R.id.txtMoney)
-        tvTotalExpense = findViewById(R.id.tvTotalExpense)
-        tvTotalIncome = findViewById(R.id.tvTotalIncome)
+        bottomNav = findViewById(R.id.bottomNavigationView)
+        fabAdd = findViewById(R.id.fabAdd)
 
+        setupUI()
+        setupFragment(savedInstanceState)
         setupNavigation()
     }
 
-    override fun onResume() {
-        super.onResume()
-        refreshData()
+    // Khởi tạo giao diện
+    private fun setupUI() {
+        bottomNav.background = null
+        bottomNav.menu.getItem(2).isEnabled = false
+
+        fabAdd.setOnClickListener {
+            startActivity(Intent(this, AddExpenseActivity::class.java))
+        }
     }
 
+    // Khởi tạo fragment
+    private fun setupFragment(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_container, overviewFragment, "overview")
+                .add(R.id.fragment_container, historyFragment, "history").hide(historyFragment)
+                .add(R.id.fragment_container, analyticsFragment, "analytics").hide(analyticsFragment)
+                .add(R.id.fragment_container, profileFragment, "profile").hide(profileFragment)
+                .commit()
+
+            activeFragment = overviewFragment
+        } else {
+            activeFragment = supportFragmentManager.findFragmentByTag("overview") ?: overviewFragment
+        }
+
+        }
+
+    // Khởi tạo thanh điều hướng
     private fun setupNavigation() {
-        findViewById<android.view.View>(R.id.btnNavCategories)?.setOnClickListener {
-            val intent = Intent(this, AddExpenseActivity::class.java)
-            startActivity(intent)
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_overview -> switchFragment(overviewFragment)
+                R.id.nav_history -> switchFragment(historyFragment)
+                R.id.nav_profile -> switchFragment(profileFragment)
+                R.id.nav_statistics -> switchFragment(analyticsFragment)
+            }
+            true
         }
-
-        findViewById<android.view.View>(R.id.btnNavHistory)?.setOnClickListener {
-            val intent = Intent(this, HistoryActivity::class.java)
-            startActivity(intent)
-        }
-
-        findViewById<android.view.View>(R.id.btnNavStatistics)?.setOnClickListener {
-            val intent = Intent(this, AnalyticsActivity::class.java)
-            startActivity(intent)
-        }
-
-        findViewById<android.view.View>(R.id.btnNavProfile)?.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
-        }
+        bottomNav.setOnItemReselectedListener { }
     }
 
-    private fun refreshData() {
-        val globalPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userId = globalPref.getLong("current_user_id", -1)
-        if (userId == -1L) {
-            startActivity(Intent(this, com.example.expensemanagement.ui.auth.LoginActivity::class.java))
-            finish()
-            return
-        }
+    private fun switchFragment(target : Fragment) {
+        if (target == activeFragment) return
 
-        val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
-        val usernamePref = userPrefs.getString("username", "User")
-        val currency = userPrefs.getString("currency", "₫") ?: "₫"
-        txtWelcome.text = "Xin chào, $usernamePref"
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
+            .hide(activeFragment)
+            .show(target)
+            .commit()
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getDatabase(this@MainActivity)
-            val user = db.userDao().getById(userId)
-            val transactions = db.transactionDao().getByUser(userId)
-
-            val displayName = user?.fullName ?: usernamePref
-
-            // Tính số dư tổng quát
-            var totalAllExp = 0.0
-            var totalAllInc = 0.0
-
-            // Tính báo cáo tháng này
-            var monthExp = 0.0
-            var monthInc = 0.0
-
-            val calendar = Calendar.getInstance()
-            val currentMonth = calendar.get(Calendar.MONTH)
-            val currentYear = calendar.get(Calendar.YEAR)
-
-            for (t in transactions) {
-                // Tính số dư (tất cả thời gian)
-                if (t.type == "EXPENSE") totalAllExp += t.amount
-                else totalAllInc += t.amount
-
-                // Lọc cho tháng này
-                calendar.timeInMillis = t.transactionDate
-                if (calendar.get(Calendar.MONTH) == currentMonth && calendar.get(Calendar.YEAR) == currentYear) {
-                    if (t.type == "EXPENSE") monthExp += t.amount
-                    else monthInc += t.amount
-                }
-            }
-
-            val balance = (totalAllInc - totalAllExp).toLong()
-
-            withContext(Dispatchers.Main) {
-                txtWelcome.text = "Xin chào, $displayName"
-                txtMoney.text = MoneyUtils.format(balance.toString(), currency)
-                tvTotalExpense.text = MoneyUtils.format(monthExp.toLong().toString(), currency)
-                tvTotalIncome.text = MoneyUtils.format(monthInc.toLong().toString(), currency)
-
-                userPrefs.edit()
-                    .putString("money", balance.toString())
-                    .putString("username", displayName)
-                    .apply()
-            }
-        }
+        activeFragment = target
     }
+
 }

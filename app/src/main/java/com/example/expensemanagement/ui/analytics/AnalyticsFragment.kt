@@ -1,13 +1,11 @@
 package com.example.expensemanagement.ui.analytics
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
+import android.view.*
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,9 +13,6 @@ import com.example.expensemanagement.R
 import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.data.local.entity.CategoryEntity
 import com.example.expensemanagement.data.local.entity.TransactionEntity
-import com.example.expensemanagement.ui.history.HistoryActivity
-import com.example.expensemanagement.ui.main.MainActivity
-import com.example.expensemanagement.ui.profile.ProfileActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.XAxis
@@ -25,35 +20,42 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
 
-class AnalyticsActivity : AppCompatActivity() {
+class AnalyticsFragment : Fragment() {
 
     private lateinit var pieChart: PieChart
     private lateinit var barChart: BarChart
     private lateinit var rvCategoryDetails: RecyclerView
     private lateinit var categoryAdapter: CategoryAnalyticsAdapter
     private lateinit var tvProfitLossStatus: TextView
+    private lateinit var analyticsContent: View
+    private lateinit var emptyState: View
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_analytics)
-
-        pieChart = findViewById(R.id.pieChart)
-        barChart = findViewById(R.id.barChart)
-        rvCategoryDetails = findViewById(R.id.rvCategoryDetails)
-        tvProfitLossStatus = findViewById(R.id.tvProfitLossStatus)
-
-        setupRecyclerView()
-        setupNavigation()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.activity_analytics, container, false)
     }
 
-    private fun setupRecyclerView() {
-        categoryAdapter = CategoryAnalyticsAdapter(emptyList())
-        rvCategoryDetails.layoutManager = LinearLayoutManager(this)
-        rvCategoryDetails.adapter = categoryAdapter
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initViews(view)
+        setupRecyclerView()
+    }
+
+    private fun initViews(view: View) {
+        pieChart = view.findViewById(R.id.pieChart)
+        barChart = view.findViewById(R.id.barChart)
+        rvCategoryDetails = view.findViewById(R.id.rvCategoryDetails)
+        tvProfitLossStatus = view.findViewById(R.id.tvProfitLossStatus)
+
+        analyticsContent = view.findViewById(R.id.analyticsContent)
+        emptyState = view.findViewById(R.id.llEmptyState)
     }
 
     override fun onResume() {
@@ -61,8 +63,17 @@ class AnalyticsActivity : AppCompatActivity() {
         loadDataFromDatabase()
     }
 
+    private fun setupRecyclerView() {
+        categoryAdapter = CategoryAnalyticsAdapter(emptyList())
+        rvCategoryDetails.layoutManager = LinearLayoutManager(requireContext())
+        rvCategoryDetails.adapter = categoryAdapter
+    }
+
+
     private fun loadDataFromDatabase() {
-        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val context = requireContext()
+
+        val sharedPref = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getLong("current_user_id", -1)
 
         if (userId == -1L) {
@@ -70,25 +81,33 @@ class AnalyticsActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val db = AppDatabase.getDatabase(this@AnalyticsActivity)
+            val db = AppDatabase.getDatabase(context)
             val transactions = db.transactionDao().getByUser(userId)
             val categories = db.categoryDao().getByUser(userId)
             val categoryMap = categories.associateBy { it.id }
 
             withContext(Dispatchers.Main) {
-                if (transactions.isEmpty()) {
-                    findViewById<View>(R.id.analyticsContent).visibility = View.GONE
-                    findViewById<View>(R.id.llEmptyState).visibility = View.VISIBLE
-                } else {
-                    findViewById<View>(R.id.analyticsContent).visibility = View.VISIBLE
-                    findViewById<View>(R.id.llEmptyState).visibility = View.GONE
-                    updateProfitLossStatus(transactions)
-                    updatePieChart(transactions, categoryMap)
-                    updateBarChart(transactions)
-                    updateCategoryList(transactions, categoryMap)
-                }
+                updateUI(transactions, categoryMap)
             }
         }
+    }
+
+    private fun updateUI(
+        transactions: List<TransactionEntity>,
+        categoryMap: Map<Long, CategoryEntity>
+    ) {
+        if(transactions.isEmpty()) {
+            analyticsContent.visibility = View.GONE
+            emptyState.visibility = View.VISIBLE
+            return
+        }
+        analyticsContent.visibility = View.VISIBLE
+        emptyState.visibility = View.GONE
+
+        updateProfitLossStatus(transactions)
+        updatePieChart(transactions, categoryMap)
+        updateBarChart(transactions)
+        updateCategoryList(transactions, categoryMap)
     }
 
     private fun updateProfitLossStatus(transactions: List<TransactionEntity>) {
@@ -232,33 +251,6 @@ class AnalyticsActivity : AppCompatActivity() {
             "Chi tiêu khác" -> "#9E9E9E"
             "Thu nhập khác" -> "#8BC34A"
             else -> "#757575"
-        }
-    }
-
-    private fun setupNavigation() {
-        findViewById<View>(R.id.btnNavOverview)?.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            })
-            overridePendingTransition(0, 0)
-        }
-        findViewById<View>(R.id.btnNavHistory)?.setOnClickListener {
-            startActivity(Intent(this, HistoryActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            })
-            overridePendingTransition(0, 0)
-        }
-        findViewById<View>(R.id.btnNavCategories)?.setOnClickListener {
-            startActivity(Intent(this, com.example.expensemanagement.ui.main.AddExpenseActivity::class.java))
-        }
-        findViewById<View>(R.id.btnNavStatistics)?.setOnClickListener {
-            // Đã ở trang thống kê, có thể scroll lên đầu
-        }
-        findViewById<View>(R.id.btnNavProfile)?.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            })
-            overridePendingTransition(0, 0)
         }
     }
 }
