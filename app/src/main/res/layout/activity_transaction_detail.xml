@@ -50,91 +50,106 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:layout_marginTop="10dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Mã giao dịch"
-                    android:textColor="#757575"/>
+                    android:textColor="#757575" />
+
                 <TextView
+                    android:id="@+id/tvTransactionId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvTransactionId"
                     android:layout_alignParentEnd="true"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Danh mục"
-                    android:textColor="#757575"/>
+                    android:textColor="#757575" />
+
                 <TextView
+                    android:id="@+id/tvCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvCategory"
-                    android:textSize="16sp"
                     android:layout_alignParentEnd="true"
-                    android:textStyle="bold"/>
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                    android:paddingBottom="10dp">
+                android:paddingBottom="10dp">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Số tiền"
-                    android:textColor="#757575"/>
+                    android:textColor="#757575" />
+
                 <TextView
+                    android:id="@+id/tvAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvAmount"
-                    android:textSize="18sp"
                     android:layout_alignParentEnd="true"
-                    android:textStyle="bold"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ngày"
-                    android:textColor="#757575"/>
+                    android:textColor="#757575" />
+
                 <TextView
+                    android:id="@+id/tvDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvDate"
                     android:layout_alignParentEnd="true"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ghi chú"
-                    android:textColor="#757575"/>
+                    android:textColor="#757575" />
+
                 <TextView
+                    android:id="@+id/tvNote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvNote"
                     android:layout_alignParentEnd="true"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp" />
             </RelativeLayout>
 
         </LinearLayout>
@@ -145,12 +160,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:src="@android:drawable/ic_menu_delete"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
         android:contentDescription="Xóa"
-        app:backgroundTint="#F44336"
-        app:tint="#FFFFFF"
+        android:src="@android:drawable/ic_menu_delete"
 
+        app:backgroundTint="#F44336"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="#FFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

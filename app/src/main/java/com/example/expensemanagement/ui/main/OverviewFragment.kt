@@ -109,8 +109,8 @@ class OverviewFragment : Fragment() {
 
                 txtWelcome.text = "Xin chào, $displayName"
                 txtMoney.text = MoneyUtils.format(balance.toString(), currency)
-                tvTotalExpense.text = MoneyUtils.format(monthExp.toLong().toString(), currency)
-                tvTotalIncome.text = MoneyUtils.format(monthInc.toLong().toString(), currency)
+                tvTotalExpense.text = MoneyUtils.format(monthExp.toLong().toString(), "đ")
+                tvTotalIncome.text = MoneyUtils.format(monthInc.toLong().toString(), "đ")
 
                 userPrefs.edit()
                     .putString("money", balance.toString())

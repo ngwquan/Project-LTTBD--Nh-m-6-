@@ -66,11 +66,11 @@
 
                     <ImageView
                         android:id="@+id/imgToggle"
-                        android:src="@drawable/visible_ic_eye"
+                        android:src="@drawable/ic_visible_eye"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:padding="12dp"
-                        android:layout_width="45dp"
+                        android:layout_width="65dp"
                         android:layout_height="55dp"/>
                 </RelativeLayout>
 

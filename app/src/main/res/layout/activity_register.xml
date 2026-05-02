@@ -83,11 +83,11 @@
                         android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/imgTogglePass"
-                        android:src="@drawable/visible_ic_eye"
+                        android:src="@drawable/ic_visible_eye"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:padding="12dp"
-                        android:layout_width="45dp"
+                        android:layout_width="65dp"
                         android:layout_height="55dp"/>
                 </RelativeLayout>
                 <RelativeLayout
@@ -105,11 +105,11 @@
                         android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/imgToggleConfirmPass"
-                        android:src="@drawable/visible_ic_eye"
+                        android:src="@drawable/ic_visible_eye"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:padding="12dp"
-                        android:layout_width="45dp"
+                        android:layout_width="65dp"
                         android:layout_height="55dp"/>
                 </RelativeLayout>
                 <Button

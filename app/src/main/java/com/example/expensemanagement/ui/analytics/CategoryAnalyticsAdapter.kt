@@ -33,15 +33,19 @@ class CategoryAnalyticsAdapter(private var items: List<CategorySummary>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
+
         holder.tvName.text = item.name
         holder.tvAmount.text = MoneyUtils.format(item.amount.toLong().toString(), "₫")
         
         // Hiển thị màu sắc danh mục
         holder.viewIcon.background.setTint(Color.parseColor(item.color))
-        
+        holder.viewIcon.alpha = 0.3f
+
         // Nếu là chi tiêu thì để màu đỏ, thu nhập màu xanh (tùy chọn)
         if (item.amount < 0) {
             holder.tvAmount.setTextColor(Color.parseColor("#F44336"))
+        } else {
+            holder.tvAmount.setTextColor(Color.parseColor("#4CAF50"))
         }
     }
 

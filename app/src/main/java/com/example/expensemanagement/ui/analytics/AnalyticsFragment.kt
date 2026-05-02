@@ -3,6 +3,7 @@ package com.example.expensemanagement.ui.analytics
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import com.example.expensemanagement.R
 import com.example.expensemanagement.data.local.database.AppDatabase
 import com.example.expensemanagement.data.local.entity.CategoryEntity
 import com.example.expensemanagement.data.local.entity.TransactionEntity
+import com.example.expensemanagement.utils.MoneyUtils
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.XAxis
@@ -38,7 +40,7 @@ class AnalyticsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.activity_analytics, container, false)
+        return inflater.inflate(R.layout.fragment_analytics, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -108,28 +110,40 @@ class AnalyticsFragment : Fragment() {
         updatePieChart(transactions, categoryMap)
         updateBarChart(transactions)
         updateCategoryList(transactions, categoryMap)
+        Log.d("UI_CHECK", "updateUI called with size = ${transactions.size}")
     }
 
     private fun updateProfitLossStatus(transactions: List<TransactionEntity>) {
         var totalIncome = 0.0
         var totalExpense = 0.0
 
+        val context = requireContext()
+        val globalPref = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = globalPref.getLong("current_user_id", -1)
+
+        val userPrefs = context.getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
+        val currency = userPrefs.getString("currency", "₫") ?: "₫"
+
         for (t in transactions) {
-            when (t.type) {
+            when (t.type.trim().uppercase())  {
                 "INCOME" -> totalIncome += t.amount
                 "EXPENSE" -> totalExpense += t.amount
             }
         }
 
-        val balance = totalIncome - totalExpense
+        val balance = (totalIncome - totalExpense).toLong()
+        Log.d("Transaction", "Income: $totalIncome")
+        Log.d("Transaction", "Expense: $totalExpense")
+        Log.d("Transaction", "Balance: $balance")
+        Log.d("Transaction", "Size: ${transactions.size}")
         if (balance > 0) {
-            tvProfitLossStatus.text = "Lãi: \$${String.format(Locale.US, "%.2f", balance)}"
+            tvProfitLossStatus.text = "Lãi: ${MoneyUtils.format(balance.toString(), currency)}"
             tvProfitLossStatus.setTextColor(Color.parseColor("#4CAF50")) // Xanh lá cây
         } else if (balance < 0) {
-            tvProfitLossStatus.text = "Lỗ: \$${String.format(Locale.US, "%.2f", Math.abs(balance))}"
+            tvProfitLossStatus.text = "Lỗ: ${MoneyUtils.format(Math.abs(balance).toString(), currency)}"
             tvProfitLossStatus.setTextColor(Color.parseColor("#F44336")) // Đỏ
         } else {
-            tvProfitLossStatus.text = "Cân bằng: \$0.00"
+            tvProfitLossStatus.text = "Cân bằng: 0"
             tvProfitLossStatus.setTextColor(Color.parseColor("#757575")) // Xám
         }
     }

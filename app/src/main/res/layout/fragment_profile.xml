@@ -24,7 +24,7 @@
             <View
                 android:id="@+id/headerBg"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="120dp"
                 android:background="#4DB6E2" />
 
             <androidx.cardview.widget.CardView
@@ -52,7 +52,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
-                            android:src="@android:drawable/ic_menu_myplaces"
+                            android:src="@drawable/ic_profile"
                             app:tint="#4DB6E2" />
                     </androidx.cardview.widget.CardView>
 
@@ -60,7 +60,7 @@
                         android:id="@+id/tvUsername"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="8dp"
                         android:text="Tên người dùng"
                         android:textColor="#212121"
                         android:textSize="20sp"

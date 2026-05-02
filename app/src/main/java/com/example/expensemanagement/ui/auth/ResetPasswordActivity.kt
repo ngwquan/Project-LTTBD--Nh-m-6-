@@ -1,7 +1,6 @@
 package com.example.expensemanagement.ui.auth
 
 import android.os.Bundle
-import android.text.InputType
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -42,13 +41,13 @@ class ResetPasswordActivity : AppCompatActivity() {
             if (isPasswordVisible) {
                 edtNewPass.transformationMethod = HideReturnsTransformationMethod.getInstance()
                 edtConfirm.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                imgTogglePass.setImageResource(R.drawable.invisible_ic_eye)
-                imgToggleConfirmPass.setImageResource(R.drawable.invisible_ic_eye)
+                imgTogglePass.setImageResource(R.drawable.ic_invisible_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.ic_invisible_eye)
             } else {
                 edtNewPass.transformationMethod = PasswordTransformationMethod.getInstance()
                 edtConfirm.transformationMethod = PasswordTransformationMethod.getInstance()
-                imgTogglePass.setImageResource(R.drawable.visible_ic_eye)
-                imgToggleConfirmPass.setImageResource(R.drawable.visible_ic_eye)
+                imgTogglePass.setImageResource(R.drawable.ic_visible_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.ic_visible_eye)
             }
             edtNewPass.setSelection(edtNewPass.text.length)
             edtConfirm.setSelection(edtConfirm.text.length)

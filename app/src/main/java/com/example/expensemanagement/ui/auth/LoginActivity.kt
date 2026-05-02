@@ -49,10 +49,10 @@ class LoginActivity : AppCompatActivity() {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
                 edtPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                imgToggle.setImageResource(R.drawable.invisible_ic_eye)
+                imgToggle.setImageResource(R.drawable.ic_invisible_eye)
             } else {
                 edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
-                imgToggle.setImageResource(R.drawable.visible_ic_eye)
+                imgToggle.setImageResource(R.drawable.ic_visible_eye)
             }
             edtPassword.setSelection(edtPassword.text.length)
         }

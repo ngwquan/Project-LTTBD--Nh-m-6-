@@ -40,13 +40,13 @@ class RegisterActivity : AppCompatActivity() {
             if (isPasswordVisible) {
                 edtPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
                 edtConfirm.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                imgTogglePass.setImageResource(R.drawable.invisible_ic_eye)
-                imgToggleConfirmPass.setImageResource(R.drawable.invisible_ic_eye)
+                imgTogglePass.setImageResource(R.drawable.ic_invisible_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.ic_invisible_eye)
             } else {
                 edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
                 edtConfirm.transformationMethod = PasswordTransformationMethod.getInstance()
-                imgTogglePass.setImageResource(R.drawable.visible_ic_eye)
-                imgToggleConfirmPass.setImageResource(R.drawable.visible_ic_eye)
+                imgTogglePass.setImageResource(R.drawable.ic_visible_eye)
+                imgToggleConfirmPass.setImageResource(R.drawable.ic_visible_eye)
             }
             edtPassword.setSelection(edtPassword.text.length)
             edtConfirm.setSelection(edtConfirm.text.length)

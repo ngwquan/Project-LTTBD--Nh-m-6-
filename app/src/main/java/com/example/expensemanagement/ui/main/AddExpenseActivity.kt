@@ -109,12 +109,14 @@ class AddExpenseActivity : AppCompatActivity() {
             tvTabIncome.setBackgroundResource(0)
             tvTabIncome.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
             tvAmountLabel.text = "Số tiền chi"
+            btnSave.text = "LƯU KHOẢN CHI"
         } else {
             tvTabIncome.setBackgroundResource(R.drawable.bg_toggle_selected)
             tvTabIncome.setTextColor(android.graphics.Color.WHITE)
             tvTabExpense.setBackgroundResource(0)
             tvTabExpense.setTextColor(android.graphics.Color.parseColor("#A0A0A0"))
             tvAmountLabel.text = "Số tiền thu"
+            btnSave.text = "LƯU KHOẢN THU"
         }
         loadCategoriesFromDb()
     }
@@ -163,7 +165,6 @@ class AddExpenseActivity : AppCompatActivity() {
                 wallet = db.walletDao().getByUser(userId).first()
             }
 
-            // SỬA LỖI: Gán đúng tên tham số để tránh nhầm lẫn kiểu dữ liệu (Argument type mismatch)
             val transaction = TransactionEntity(
                 userId = userId,
                 walletId = wallet.id,

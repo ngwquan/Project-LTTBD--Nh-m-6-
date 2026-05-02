@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAF6FB"
-    android:layout_marginTop="50dp"
     tools:ignore="HardcodedText,ContentDescription">
 
     <androidx.core.widget.NestedScrollView
@@ -189,9 +188,9 @@
 
                             <View
                                 android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginTop="9dp"
-                                android:background="#EEEEEE" />
+                                android:layout_height="2dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#4CB5E0" />
                         </LinearLayout>
                     </LinearLayout>
 
