@@ -13,6 +13,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 
 class EditProfileActivity : AppCompatActivity() {
 
@@ -94,10 +95,11 @@ class EditProfileActivity : AppCompatActivity() {
 
         val user = currentUser ?: return
 
-        // Password change logic
+        // Logic đổi mật khẩu đã được khôi phục mã hóa băm
         var updatedPasswordHash = user.passwordHash
         if (newPassword.isNotEmpty()) {
-            if (oldPassword != user.passwordHash) {
+            val hashedOldPassword = hashPassword(oldPassword)
+            if (hashedOldPassword != user.passwordHash) {
                 Toast.makeText(this, "Mật khẩu cũ không chính xác", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -105,15 +107,15 @@ class EditProfileActivity : AppCompatActivity() {
                 Toast.makeText(this, "Mật khẩu mới không khớp", Toast.LENGTH_SHORT).show()
                 return
             }
-            if (newPassword.length < 6) {
-                Toast.makeText(this, "Mật khẩu mới phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show()
+            if (newPassword.length < 8) {
+                Toast.makeText(this, "Mật khẩu mới phải có ít nhất 8 ký tự", Toast.LENGTH_SHORT).show()
                 return
             }
-            updatedPasswordHash = newPassword
+            updatedPasswordHash = hashPassword(newPassword)
         }
 
         val updatedUser = user.copy(
-            id = user.id, // Đảm bảo ghi đè đúng ID hiện tại
+            id = user.id,
             fullName = fullName,
             email = email,
             passwordHash = updatedPasswordHash
@@ -121,7 +123,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             val db = AppDatabase.getDatabase(this@EditProfileActivity)
-            db.userDao().update(updatedUser) // Sử dụng update thay vì insert/replace để tránh lỗi Foreign Key
+            db.userDao().update(updatedUser)
 
             // Đồng bộ lại UI trong SharedPreferences
             val userPrefs = getSharedPreferences("UserPrefs_$userId", Context.MODE_PRIVATE)
@@ -134,5 +136,12 @@ class EditProfileActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    private fun hashPassword(password: String): String {
+        val bytes = password.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return digest.joinToString("") { "%02x".format(it) }
     }
 }
