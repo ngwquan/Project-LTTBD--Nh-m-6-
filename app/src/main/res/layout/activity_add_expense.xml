@@ -128,7 +128,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="22/04/2026 (Thứ 4)"
+                                android:inputType="date"
                                 android:textColor="#212121"
                                 android:textSize="14sp" />
                             <ImageView

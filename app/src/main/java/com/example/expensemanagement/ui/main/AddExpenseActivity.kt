@@ -28,7 +28,12 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var btnBack: ImageView
     private lateinit var rvCategories: RecyclerView
     private lateinit var categoryAdapter: CategoryAdapter
+
+    private lateinit var tvDate: TextView
+
+    private lateinit var btnSelectDate: LinearLayout
     private var selectedCategory: CategoryEntity? = null
+    private var selectedDateMillis: Long = System.currentTimeMillis()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +50,11 @@ class AddExpenseActivity : AppCompatActivity() {
         switchType(true)
         setupAmountFormatting()
 
+        updateDateText(selectedDateMillis)
+        btnSelectDate.setOnClickListener {
+            showDatePicker()
+        }
+
         btnSave.setOnClickListener {
             handleSaveAction()
         }
@@ -59,6 +69,34 @@ class AddExpenseActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.btnSaveExpense)
         btnBack = findViewById(R.id.btnBack)
         rvCategories = findViewById(R.id.rvCategories)
+        tvDate = findViewById(R.id.tvDate)
+        btnSelectDate = findViewById(R.id.btnSelectDate)
+    }
+
+    private fun showDatePicker() {
+        val calendar = java.util.Calendar.getInstance()
+        calendar.timeInMillis = selectedDateMillis
+
+        val datePicker = android.app.DatePickerDialog(
+            this,
+            { _, year, month, day ->
+                val selectedCal = java.util.Calendar.getInstance()
+                selectedCal.set(year, month, day, 0, 0, 0)
+
+                selectedDateMillis = selectedCal.timeInMillis
+                updateDateText(selectedDateMillis)
+            },
+            calendar.get(java.util.Calendar.YEAR),
+            calendar.get(java.util.Calendar.MONTH),
+            calendar.get(java.util.Calendar.DAY_OF_MONTH)
+        )
+
+        datePicker.show()
+    }
+
+    private fun updateDateText(timeMillis: Long) {
+        val format = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale("vi", "VN"))
+        tvDate.text = format.format(java.util.Date(timeMillis))
     }
 
     private fun setupRecyclerView() {
@@ -172,7 +210,7 @@ class AddExpenseActivity : AppCompatActivity() {
                 amount = amount,
                 type = if (isExpense) "EXPENSE" else "INCOME",
                 note = edtNote.text.toString(),
-                transactionDate = System.currentTimeMillis()
+                transactionDate = selectedDateMillis
             )
             db.transactionDao().insert(transaction)
 
